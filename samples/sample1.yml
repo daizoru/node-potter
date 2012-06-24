@@ -1,0 +1,26 @@
+project:
+  name: sample1
+  author: foo bar
+
+scene:
+  size:
+    x: [ -10 , 10 ]
+    y: [ -10 , 10 ]
+    z: [ -10 , 10 ]
+ 
+  axis: z 
+  scale: 1cm
+ 
+  materials:
+    clay1: 
+      name : clay
+      color: brown
+      type : continous
+
+matrices:
+  ma1:
+    material: clay1
+    slices: slices/ma1/ # 20 Zslices are expected
+
+
+    
