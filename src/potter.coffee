@@ -47,9 +47,18 @@ class Potter
   emptySlice: =>
     slice = []
     for i in [0..@length]
-      row = for j in [0..@width]
+      row = 0 for j in [0..@width]
       slice.push row
 
+  use: (material) ->
+    if material
+      @lastUsed = material
+    else
+      msg = "Error, no material"
+      error msg
+      throw msg
+      return
+    
   draw: (x, y, z, material=no) ->
     [i,j,sliceId] = @map x, y, z
     slice = @slices[sliceId]
@@ -78,7 +87,7 @@ class Potter
 pot = new Potter()
 clay = pot.createMaterial "clay", "brown"
 
-# "Draw Something In 3D Space" (tm)
+# draw something
 pot.draw 5, 5, 5, clay
 pot.draw 5, 5, 6
 pot.draw 5, 5, 7
