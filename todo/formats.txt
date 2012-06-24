@@ -1,0 +1,60 @@
+
+
+PLY, STL, OFF, OBJ, 3DS, COLLADA, PTX, V3D, PTS, APTS, XYZ, GTS, TRI, ASC, X3D, X3DV, VRML, ALN
+PLY, STL, OFF, OBJ, 3DS, COLLADA, VRML, DXF, GTS, U3D, IDTF, X3D
+
+------------
+.PCI (Leica PCI Indexed Point Format)
+
+This is the same filetype used natively by Leica Cyclone.  PCI files can be read directly into PointCloud CAD.  A PCI Conversion Utility is also installed with PointCloud CAD which can be used to convert various other formats to PCI for improved performance.
+
+.PCG (Leica PCG Point Cloud Group)
+
+A .PCG file can contain references to multiple PCI files.  Please see the PointCloud CAD help file for instructions on how to create a PCG file.  The actual point data is still stored in the linked .PCI files.
+
+Leica Cyclone Users
+
+If you are using Cyclone 6.0, you can create a PCI and PCG file using the "Export to Topo II" option found in the File Menu.
+
+If you are using Cyclone 7.0, you can create a PCI and PCG file using the "Export for pcE Application" option found in the File Menu.
+
+.LAS (LiDAR Data in LAS Format)
+
+An LAS file can be read directly into PointCloud CAD, but for improved performance it is recommended that it be converted to a .PCI file using the PCI Conversion Utility which is installed with PointCloud CAD, and the resulting .PCI file be read into PointCloud CAD.
+
+PointCloud CAD 2010 v10.2.0 and MapScenes PointCloud v10.4.0 support LAS 1.0/1.1/1.2/1.3 formats.
+
+Previous versions support only the LAS 1.0 format, but you can visit www.liblas.org and download a free utility called las2txt.exe which you can use to convert an .LAS v1.1/v1.2 file to an .XYZ file which can then be converted to a .PCI file using the PCI Conversion Utility.
+
+For more information on the LAS formats please visit the ASPRS Standards Committee website.
+
+.XYZ (ASCII Coordinates)
+
+An ascii file containing comma separated x,y,z values (no point ids or descriptions) can be converted to a .PCI file using the PCI Conversion Utility which is installed with PointCloud CAD, and the resulting .PCI file can be read into PointCloud CAD.
+
+An .XYZ file cannot be read directly into PointCloud CAD, it must be converted to PCI.
+
+.PTS (Leica PTS ASCII Unordered Interchange Format)
+
+A .PTS file can be read directly into PointCloud CAD, but for improved performance it is recommended that it be converted to a .PCI file using the PCI Conversion Utility which is installed with PointCloud CAD, and the resulting .PCI file be read into PointCloud CAD.
+
+.PCIX (Leica PCI Augmented with Extension Fields)
+
+.PCIT (Leica PCI Extension)
+
+.PCS (Leica PCS FastScan™ Format)
+
+.PCSX (Leica PCS Augmented with Extension Fields)
+
+.PCST (Leica PCS Extension)
+
+The above Leica formats can be read directly into PointCloud CAD, but any custom extension data is ignored.
+
+FARO (*.FLS, *.FWS)
+
+Point cloud files from a FARO Laser Scanner can be converted to a PCI file for import into PointCloud CAD or MapScenes PointCloud by downloading and installing the free PCI Conversion Utility for FARO application.
+
+Other Formats
+
+Currently PointCloud CAD does not support any other formats besides those listed above.  However, if your scanner or lidar system works with some other file type by default, it should also be able to export data into at least one of the previous formats, particularly .LAS or .XYZ which are generic, non-proprietary data formats.
+
