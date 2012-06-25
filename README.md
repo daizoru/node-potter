@@ -9,6 +9,11 @@ write point clouds like a 3D Canvas
   For the moment 3D printers cannot read voxel formats,
   so you may have to build your own 3D printer
 
+## why
+
+  Because it's funny. If you don't get why, you should probably 
+  browse something else on Github.
+
 ## usage
 
 ```coffeescript
@@ -99,12 +104,11 @@ DATA ascii
   because one need to convert voxels-filled shapes to polygons.
 
   problem is most printers require the poly shapes to be without any holes,
-  which means automatic voel converters are not enough, and manual operation
-  is necessary
+  which means models generated using automatic voxel converters are not satifying enough, and manual edit is necessary.
 
   of course if you are coding your own 3D printer with arduino or things like this,
   it should be less of a problem (because then I suppose you have control over slicing,
-  and can directly map and match the voxel resolution to your printer's resolution.
+  and can directly map and match the voxel resolution to your printer's resolution, and basic X/Y movements).
 
   (btw I'm going to add a function to resize the voxels matrix, for this very last purpose)
 
