@@ -51,11 +51,17 @@ class Material
 
 class Potter
 
-  constructor: (url) ->
+  constructor: (options) ->
     @size =
-      x: 12
-      y: 12
-      z: 12
+      x: 32
+      y: 32
+      z: 32
+
+    if options.size?
+      if options.size.length is 3
+        @size.x = Math.round((Number) options.size[0])
+        @size.y = Math.round((Number) options.size[1])
+        @size.z = Math.round((Number) options.size[2])
 
     # x should be the main, longer axis
     @width = Math.abs @size.x
@@ -181,7 +187,7 @@ class Potter
   export: (url) ->
 
 # quick & dirty testing
-pot = new Potter()
+pot = new Potter size: [100,100,100]
 clay = pot.createMaterial "clay", "brown"
 plastic = pot.createMaterial "plastic", "red"
 metal = pot.createMaterial "metal", "grey"
@@ -191,7 +197,7 @@ pot.draw 5, 5, 5, plastic
 pot.draw 4, 5, 6
 pot.draw 5, 3, 7, metal
 
-
+log "max size: #{pot.computeMaxSize()}"
 pot.save "examples/exports/test.pts", ->
   log "file saved"
 
