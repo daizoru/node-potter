@@ -25,11 +25,12 @@ pot.draw 5, 5, 5, plastic
 pot.draw 4, 5, 6
 pot.draw 5, 3, 7, metal
 
-pot.save "points.xyz"
+# you can save to a variety of point cloud formats
 pot.save "points.pcd"
+pot.save "points.pts"
 
 # async syntax supported
-pot.save "points.pcd", ->
+pot.save "points.xyz", ->
   console.log "done"
 
 ```

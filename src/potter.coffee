@@ -47,7 +47,7 @@ class Material
     
     log "#{@}"
   toString: ->
-   "Material(id: #{@id}, name: #{@name}, color: #{@color}, type: #{@type}, rgb: (#{@rgb.r},#{@rgb.g},#{@rgb.b})})"
+   "mat #{@id} (#{@name}) is #{@color} and #{@type}"
 
 class Potter
 
@@ -183,14 +183,16 @@ class Potter
 # quick & dirty testing
 pot = new Potter()
 clay = pot.createMaterial "clay", "brown"
+plastic = pot.createMaterial "plastic", "red"
+metal = pot.createMaterial "metal", "grey"
 
 # draw something
-pot.draw 5, 5, 5, clay
+pot.draw 5, 5, 5, plastic
 pot.draw 4, 5, 6
-pot.draw 5, 3, 7
+pot.draw 5, 3, 7, metal
 
 
-pot.save "examples/exports/test.pcd", ->
+pot.save "examples/exports/test.pts", ->
   log "file saved"
 
 #pot.save "examples/slices/test_"
