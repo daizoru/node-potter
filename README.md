@@ -55,7 +55,7 @@ POINTS 3
 DATA ascii
 5 5 5 1
 4 5 6 1
-5 3 7 1
+5 3 7 2
 ```
 
 ### XYZ
