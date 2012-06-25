@@ -8,6 +8,9 @@ fs = require 'fs'
 Canvas = require 'canvas'
 #Color = require 'color'
 
+# module libs
+{wait,async} = require './toolbox'
+
 # we use color 0.4.1, but we could also use:
 # https://github.com/One-com/one-color
 
@@ -15,8 +18,13 @@ Canvas = require 'canvas'
 # because it's faster and mature
 
 
-toRGB = (num) -> #num = parseInt color, 16
+toRGBString = (num) -> #num = parseInt color, 16
   [ num >> 16, num >> 8 & 255, num & 255 ]
+
+rgbToInt = (r, g, b) -> (r << 16) + (g << 8) + b
+
+rgbToHex = (r, g, b) ->
+  "#" + ((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1)
 
 setPixel = (img, x, y, r, g, b, a) ->
   index = (x + y * img.width) * 4
@@ -32,12 +40,13 @@ class Material
   constructor: (@id,@name,@color,@type='continuous') ->
 
     # used for drawing
-    [r,g,b] = toRGB @id
-    @rgba = "rgba(#{r},#{g},#{b},0)"
+    [r, g, b] = @rgb = toRGBString @id
+    @rgbaString = "rgba(#{r},#{g},#{b},0)"
+    @hexString = rgbToHex r, g, b
     
     log "#{@}"
   toString: ->
-   "Material(id: #{@id}, name: #{@name}, color: #{@color}, type: #{@type}, rgba: #{@rgba})"
+   "Material(id: #{@id}, name: #{@name}, color: #{@color}, type: #{@type}, rgb: (#{@rgb.r},#{@rgb.g},#{@rgb.b})})"
 
 class Potter
 
@@ -59,22 +68,22 @@ class Potter
     # initialize N layers
     log "initializing #{@depth} slices"
     @slices = []
-    for x in [0..@depth] # @height included
+    for x in [0...@depth] # @height included
       canvas = new Canvas @width, @height
       ctx = canvas.getContext '2d'
       @slices.push [ canvas, ctx ]
     #log "slices: #{inspect @slices}"
 
-    @materials = []
+    @materials = {}
     @lastUsed = no
 
     # create material #0, which is basically empty space in the model
     @createMaterial "vacuum", "invisible", "vacuum"
 
   createMaterial: (name, color, type) ->
-    id = @materials.length
+    id = Object.keys(@materials).length
     material = new Material id, name, color, type
-    @materials.push material
+    @materials[id] = material
     material
 
   use: (material) ->
@@ -87,7 +96,7 @@ class Potter
       return
     
   draw: (x, y, z, material=no) ->
-    [canvas, ctx] = @slices[z-1]
+    [canvas, ctx, imgd] = @slices[z]
     if material
       log "using material #{material.id}"
       @lastUsed = material
@@ -102,12 +111,44 @@ class Potter
 
     #log "material: #{inspect material.id}"
     # draw it!
-    #log "drawing using: #{material.rgba}"
-    ctx.fillStyle = material.rgba
+    log "drawing at (#{x}, #{y}) using: #{material.hexString}"
+    ctx.fillStyle = material.hexString
     ctx.fillRect x, y, 1, 1
     ctx.stroke()
 
-  save: (path=no) =>
+  
+  save: (path,onComplete=->) => async =>
+    # keep file extension. remove any / or \ for security purposes
+    ext = path.split(".")[-1..]#.substr("/","").substr("\\","")
+    Exporter = require "./exporters/#{ext}"
+    unless Exporter
+      msg = "could not find exporter for format #{ext}"
+      error msg
+      throw msg
+      onComplete()
+      return
+
+    exp = new Exporter path,
+      onEnd: -> onComplete()
+
+    z = -1
+    for slice in @slices
+      z++
+      [canvas,ctx] = slice
+      imgd = ctx.getImageData 0, 0, @width, @height
+      for x in [0...@width]
+        for y in [0...@height]
+          i = (x + y * @width) * 4
+          #log "i: #{i}"
+          [r,g,b,a] = [imgd.data[i],imgd.data[i+1],imgd.data[i+2],imgd.data[i+3]]
+          materialId = rgbToInt r, g, b
+          material = @materials[materialId]
+          exp.write x, y, z, material
+
+    log "calling exp.close()"
+    exp.close()
+
+  savePng: (path=no) =>
     log "saving:"
     i = -1
     path = __dirname+"/" unless path
@@ -141,6 +182,8 @@ pot.draw 5, 5, 5, clay
 pot.draw 4, 5, 6
 pot.draw 5, 3, 7
 
-pot.save "examples/slices/test_"
+pot.save "examples/exports/test.xyz", ->
+  log "file saved"
+#pot.save "examples/slices/test_"
 #harry.cast()
 

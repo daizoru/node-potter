@@ -1,7 +1,43 @@
+Summary:
 
+• Volume = money.
+
+• If you don't need material somewhere, eliminate it in your design.
+
+• Make an inexpensive prototype. You won't regret it.
+
+• Try reducing the volume of your design by making it hollow.
+
+• Try reducing the volume of your design with a lattice structure, holes, or recesses.
+
+voxel output formats: 
+(see http://www.cs.princeton.edu/~min/binvox/ )
+output formats:
+.binvox, HIPS, MIRA, VTK, a "raw" file format, minecraft .schematic format, Gmsh .msh format, and nrrd format
+
+
+
+HOW TO PREPARE DIGITAL FILES FOR 3D PRINTING WITH MODDLER
+File Formats Accepted:
+.stl, .obj, .ztl, .iges, .mb, .max, .3ds
+
+
+PTS, XYZ, or LAS
+indexed PCI format
 
 PLY, STL, OFF, OBJ, 3DS, COLLADA, PTX, V3D, PTS, APTS, XYZ, GTS, TRI, ASC, X3D, X3DV, VRML, ALN
 PLY, STL, OFF, OBJ, 3DS, COLLADA, VRML, DXF, GTS, U3D, IDTF, X3D
+
+Leica PCS FastScan(tm) Format (*.pcs)
+Leica Pcs extension (*.pcst)
+Zoeller and Fruelich ZFS Uncompressed Scan Data (*.zfs)
+Zoeller and Fruelich ZFC Compressed Scan Data (*.zfc)
+Leica PTS ASCII Unordered Interchange Format (*.pts)
+Leica PCG (Point Cloud Group) (*.pcg)
+Leica PCS Point Cloud Augmented with Extension Fields (*.pcsx)
+Leica PCI Point Cloud Augmented with Extension Fields (*.pcix)
+Leica PCI Indexed Point Format (*.pci)
+Leica Pci extension (*.pcit)
 
 ------------
 .PCI (Leica PCI Indexed Point Format)

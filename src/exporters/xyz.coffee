@@ -1,18 +1,19 @@
+fs = require 'fs'
 
-class Exporter
+{wait,async} = require "../toolbox"
 
-  constructor: ->
+class module.exports
 
+  constructor: (@path, options) ->
+    @outStream = fs.createWriteStream @path, flags: 'w'
+    @onEnd = if options.onEnd? then options.onEnd else ->
+
+  close: =>
+    #@outStream.close()
+    async =>
+      @onEnd()
 
   # http://www.laserscanning.org.uk/forum/viewtopic.php?f=22&t=743
-  save: ->
-
-    #XYZ File
-    # exports XYZ data for each point cloud, vertex or sphere -
-    #this format provides a continuous point listing with no 
-    #indication of the start of new point clouds. Coordinates
-    # are transformed into the current user coordinate system
-    # and scaled for the current unit of measure.
-    buff = ""
-    for p in points
-      buff += "#{x} #{y} #{z}\n" # no material
+  write: (x, y, z, material) =>
+    return if material.id is 0
+    @outStream.write "#{x} #{y} #{z}\n" # no material

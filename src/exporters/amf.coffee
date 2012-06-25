@@ -1,9 +1,12 @@
-class Exporter
 
+class Exporter
 
   constructor: ->
 
   save: ->
+
+    # TODO http://en.wikipedia.org/wiki/Additive_Manufacturing_File_Format
+    # resources: http://amf.wikispaces.com/
     version = "1.0"
     unit = "millimeter"
 
