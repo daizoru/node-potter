@@ -43,6 +43,7 @@ class Material
     [r, g, b] = @rgb = toRGBString @id
     @rgbaString = "rgba(#{r},#{g},#{b},0)"
     @hexString = rgbToHex r, g, b
+    @rgbInt = rgbToInt r, g, b
     
     log "#{@}"
   toString: ->
@@ -73,6 +74,8 @@ class Potter
       ctx = canvas.getContext '2d'
       @slices.push [ canvas, ctx ]
     #log "slices: #{inspect @slices}"
+
+    @nbPoints = 0 # nb non-null points
 
     @materials = {}
     @lastUsed = no
@@ -109,6 +112,9 @@ class Potter
       throw msg
       return
 
+    # TODO handle cases where we ERASE points
+    @nbPoints++
+
     #log "material: #{inspect material.id}"
     # draw it!
     log "drawing at (#{x}, #{y}) using: #{material.hexString}"
@@ -129,6 +135,7 @@ class Potter
       return
 
     exp = new Exporter path,
+      nbPoints: @nbPoints
       onEnd: -> onComplete()
 
     z = -1
@@ -182,8 +189,10 @@ pot.draw 5, 5, 5, clay
 pot.draw 4, 5, 6
 pot.draw 5, 3, 7
 
-pot.save "examples/exports/test.xyz", ->
+
+pot.save "examples/exports/test.pcd", ->
   log "file saved"
+
 #pot.save "examples/slices/test_"
 #harry.cast()
 

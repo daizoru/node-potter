@@ -1,15 +1,24 @@
+fs = require 'fs'
 
-# DOC
-# http://pointclouds.org/documentation/tutorials/pcd_file_format.php
+{wait,async} = require "../toolbox"
 
-class Exporter
+class module.exports
 
-  constructor: ->
+  constructor: (@path, options) ->
+    @outStream = fs.createWriteStream @path, flags: 'w'
+    @onEnd = if options.onEnd? then options.onEnd else ->
+    @headerWritten = no
 
+    @nbPoints = options.nbPoints
 
-  save: ->
+    @writeHeader()
 
-    points = []
+  close: =>
+    #@outStream.close()
+    async =>
+      @onEnd()
+
+  writeHeader: () =>
 
     header =
       version: '.7'
@@ -40,7 +49,7 @@ class Exporter
       #(equal with POINTS see below) for unorganized datasets;
       # - it can specify the width (total number of points in a row)
       # of an organized point cloud dataset.
-      width: 213
+      width: @nbPoints
 
       # specifies the height of the point cloud dataset in the number of points. 
       # HEIGHT has two meanings:
@@ -59,7 +68,7 @@ class Exporter
       # specifies the total number of points in the cloud. As of version 0.7,
       # its purpose is a bit redundant, so we’re expecting this to be removed 
       # in future versions.
-      points: points.length
+      points: @nbPoints
 
       # specifies the data type that the point cloud data is stored in. As of 
       # version 0.7, two data types are supported: ascii and binary. See the 
@@ -78,11 +87,16 @@ class Exporter
       'points'
       'data'
     ]
-    
-    buff = ""
+
     for key in headerOrder
       value = header[key]
-      buff += "#{key.toUpperCase()} #{value}"
+      @outStream.write "#{key.toUpperCase()} #{value}\n"
 
-    for point in points
-      buff += "#{p.x} #{p.y} #{p.z} #{p.material.rgb}"
+    @headerWritten = yes
+
+
+  # http://pointclouds.org/documentation/tutorials/pcd_file_format.php
+  write: (x, y, z, material) =>
+    return if material.id is 0
+    # @writeHeader() unless @headerWritten
+    @outStream.write "#{x} #{y} #{z} #{material.rgbInt}\n" # no material
