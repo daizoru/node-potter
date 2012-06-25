@@ -35,13 +35,14 @@ pot.save "points.xyz", ->
 
 ```
 
-## example outputs
+## Supported output format
 
 ### PCD (Point Cloud Data)
 
- Specs: http://pointclouds.org/documentation/tutorials/pcd_file_format.php
+  Specs: 
+  http://pointclouds.org/documentation/tutorials/pcd_file_format.php
 
- sample (from node-potter):
+  Sample:
 
 ```
 VERSION .7
@@ -59,15 +60,51 @@ DATA ascii
 5 3 7 2
 ```
 
+### PTS
+
+  Spec: 
+
+```
+
+   NB_POINTS
+   X Y Z INTENSITY R G B
+   X Y Z INTENSITY R G B
+   ...
+
+```
+  Sample:
+
+```
+3
+5 5 5 1 0 0 2
+4 5 6 1 0 0 2
+5 3 7 1 0 0 3
+```
+
 ### XYZ
 
- Specs: ?
-
- sample (from node-potter):
+  Sample:
 
 ```
 5 5 5
 4 5 6
 5 3 7
 ```
+
+## Unsupported formats
+
+  For the moment AMF, STL.. are not supported.
+
+  Exporting voxels to a 3D printer-ready format is a tricky task,
+  because one need to convert voxels-filled shapes to polygons.
+
+  problem is most printers require the poly shapes to be without any holes,
+  which means automatic voel converters are not enough, and manual operation
+  is necessary
+
+  of course if you are coding your own 3D printer with arduino or things like this,
+  it should be less of a problem (because then I suppose you have control over slicing,
+  and can directly map and match the voxel resolution to your printer's resolution.
+
+  (btw I'm going to add a function to resize the voxels matrix, for this very last purpose)
 
