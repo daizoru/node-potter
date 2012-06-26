@@ -17,6 +17,40 @@ Canvas = require 'canvas'
 # we use node-canvas for all drawing operation
 # because it's faster and mature
 
+len = (p1, p2) ->
+  dx = p2[0] - p1[0]
+  dy = p2[1] - p1[1]
+  dz = p2[2] - p1[2]
+
+  sm = dx*dx + dy*dy + dz*dz
+  #log "sm: #{sm}"
+  Math.round(Math.sqrt sm)
+
+readPath = (p1, p2) ->
+  dx = p2[0] - p1[0]
+  dy = p2[1] - p1[1]
+  dz = p2[2] - p1[2]
+
+  sm = dx*dx + dy*dy + dz*dz
+  #log "sm: #{sm}"
+  resolution = Math.round(Math.sqrt sm)
+
+  if resolution < 1
+    #log "resolution 0 not handled yet"
+    return []
+
+  points = []
+    #log "res: #{resolution}"
+  # now we search the position of every point
+  for i in [0..resolution]
+    #log "ok: #{i}"
+    r = i / resolution # ratio
+    x = Math.round( p1[0] + dx * r )
+    y = Math.round( p1[1] + dy * r )
+    z = Math.round( p1[2] + dz * r )
+    points.push [x,y,z]
+  points
+
 
 toRGBString = (num) -> #num = parseInt color, 16
   [ num >> 16, num >> 8 & 255, num & 255 ]
@@ -49,7 +83,7 @@ class Material
   toString: ->
    "mat #{@id} (#{@name}) is #{@color} and #{@type}"
 
-class Potter
+class module.exports
 
   constructor: (options) ->
     @size =
@@ -84,7 +118,7 @@ class Potter
     @nbPoints = 0 # nb non-null points
 
     @materials = {}
-    @lastUsed = no
+    @currentMaterial = no
 
     # create material #0, which is basically empty space in the model
     @createMaterial "vacuum", "invisible", "vacuum"
@@ -97,44 +131,81 @@ class Potter
 
   use: (material) ->
     if material
-      @lastUsed = material
+      @currentMaterial = material
     else
       msg = "Error, no material"
       error msg
       throw msg
       return
-    
-  draw: (x, y, z, material=no) ->
-    [canvas, ctx, imgd] = @slices[z]
-    if material
-      log "using material #{material.id}"
-      @lastUsed = material
-    else
-      material = @lastUsed
 
-    unless material
-      msg = "Error, no material"
-      error msg
-      throw msg
-      return
-
+  dot: (p) ->
+    [canvas, ctx, imgd] = @slices[Math.round(p[2])]
     # TODO handle cases where we ERASE points
-    @nbPoints++
 
-    #log "material: #{inspect material.id}"
-    # draw it!
-    log "drawing at (#{x}, #{y}) using: #{material.hexString}"
-    ctx.fillStyle = material.hexString
-    ctx.fillRect x, y, 1, 1
-    ctx.stroke()
-
+    old = @readVoxel p
+    #log "old of #{p}: #{old}"
+    if old.id isnt @currentMaterial
+      if @currentMaterial isnt 0
+        if old.id is 0
+          @nbPoints++
+      else
+        if @old.id isnt 0
+          @nbPoints--
   
-  readVoxel: (x,y,z) =>
+      #log "material: #{inspect material.id}"
+      # draw it!
+      #log "drawing at (#{p[0]}, #{p[1]}) using: #{@currentMaterial.hexString}"
+      ctx.fillStyle = @currentMaterial.hexString
+      ctx.fillRect Math.round(p[0]), Math.round(p[1]), 1, 1
+      ctx.stroke()
+
+  line: (p1, p2, material=no) ->
+    #log "p1: #{p1} p2: #{p2}"
+    points = readPath p1, p2
+    #log "drawing points"
+    #console.dir points
+    @dot p for p in points
+
+  #face: (p1, p2) ->
+  #  width = len 
+    
+  sphere: (p, radius) =>
+
+    res = radius
+    M = res * 3
+    N = res * 6
+    f = (m,n) -> [
+      Math.sin(Math.PI * m/M) * Math.cos(Math.PI*2 * n/N)
+      Math.sin(Math.PI * m/M) * Math.sin(Math.PI*2 * n/N)
+      Math.cos(Math.PI * m/M)
+    ]
+
+    for m in [0..M]
+      for n in [0...N]
+        s = f m,n
+
+        [x,y,z] = [
+          Math.round(p[0] + s[0]*radius)
+          Math.round(p[1] + s[1]*radius)
+          Math.round(p[2] + s[2]*radius)
+        ]
+        #console.log "#{[x,y,z]}"
+        @dot [x,y,z]
+        #@dot [x1,y1,z1]
+
+  readVoxel: (p) =>
+    [x,y,z] = p
     imgd = @slices[z][1].getImageData 0, 0, @width, @height
     i = (x + y * @width) * 4
     [r,g,b,a] = [imgd.data[i],imgd.data[i+1],imgd.data[i+2],imgd.data[i+3]]
     @materials[rgbToInt(r, g, b)]
 
+  walk: (keypoints,fn) =>
+    for i in [0...keypoints.length-1]
+      log " #{keypoints[0]} -> #{keypoints[i+1]}"
+      points = readPath keypoints[i], keypoints[i+1]
+      for point in points
+        fn point
 
   save: (path,onComplete=->) => async =>
     # keep file extension. remove any / or \ for security purposes
@@ -152,7 +223,7 @@ class Potter
       width: @width
       height: @height
       depth: @depth
-      matrix: (x,y,z) => @readVoxel x, y, z
+      matrix: (p) => @readVoxel p
       onEnd: -> onComplete()
 
     z = -1
@@ -195,22 +266,3 @@ class Potter
 
 
   export: (url) ->
-
-# quick & dirty testing
-pot = new Potter size: [100,100,100]
-clay = pot.createMaterial "clay", "brown"
-plastic = pot.createMaterial "plastic", "red"
-metal = pot.createMaterial "metal", "grey"
-
-# draw something
-pot.draw 5, 5, 5, plastic
-pot.draw 4, 5, 6
-pot.draw 5, 3, 7, metal
-
-#log "max size: #{pot.computeMaxSize()}"
-pot.save "examples/exports/test.stl", ->
-  log "file saved"
-
-#pot.save "examples/slices/test_"
-#harry.cast()
-

@@ -28,10 +28,30 @@ pot = new Potter()
 plastic = pot.createMaterial "plastic", "red"
 metal =   pot.createMaterial "metal",   "grey"
 
-# draw something
-pot.draw 5, 5, 5, plastic
-pot.draw 4, 5, 6
-pot.draw 5, 3, 7, metal
+# use a material for all next draw operations
+pot.use plastic
+
+# draw 3D dots (voxels)
+pot.dot [ 5, 5, 5 ]
+pot.dot [ 4, 5, 6 ]
+pot.dot [ 5, 3, 7 ]
+
+# it's easier if you use it this way
+p1 = [20, 20, 15]
+p2 = [15, 40, 15]
+p3 = [30, 20, 30]
+
+# you can draw lines as well
+pot.line p1, p3
+
+# potter can also walk 3D paths
+# a "pencil" function will be called for each point
+# warning: this can be quite slow for long paths
+# or slow drawing functions (like minutes or hours)
+path = [p1,p2,p3,p4]
+rad = 3
+pot.walk path, (p) -> 
+  pot.sphere p, rad
 
 # you can save to a variety of point cloud formats
 pot.save "points.pcd"
