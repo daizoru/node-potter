@@ -23,7 +23,7 @@ class module.exports
     @str_s = (x,y,z) -> "  facet normal #{x} #{y} #{y}\n    outer loop\n"
     @str_v = (x,y,z) -> "      vertex #{x} #{y} #{z}\n"    
 
-    @outStream.write "start\n"
+    #@outStream.write "start\n"
     @outStream.write "solid Pot\n"
 
   close: =>
