@@ -16,10 +16,7 @@
   },
   "dependencies": {
      "pkginfo"           : "0.2.x",
-     "snappy"            : "1.2.0",
-     "libyaml"           : "0.1.1",
-     "canvas"            : "0.12.0",
-     "color"             : "0.4.1"
+     "canvas"            : "0.12.0"
   },
   "devDependencies": {
     "should"        : "0.6.x",
