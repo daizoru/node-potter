@@ -67,7 +67,7 @@ write point clouds like a 3D Canvas
 
 ## Demo
 
-### In CoffeeScript - please fasten your seatbelt!
+### In CoffeeScript - please fasten your seatbelt
 
 ``` coffeescript
 #!/usr/bin/env coffee
@@ -113,6 +113,10 @@ dog.save "examples/exports/#{name}.stl", ->
   log "file saved"
 
 ```
+
+![doogy](http://img528.imageshack.us/img528/518/doggy.png)
+
+ headless doggy
 
 ## Supported output format
 
