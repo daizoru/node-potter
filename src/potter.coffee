@@ -200,9 +200,9 @@ class module.exports
     [r,g,b,a] = [imgd.data[i],imgd.data[i+1],imgd.data[i+2],imgd.data[i+3]]
     @materials[rgbToInt(r, g, b)]
 
-  walk: (keypoints,fn) =>
+  trace: (keypoints,fn) =>
     for i in [0...keypoints.length-1]
-      log " #{keypoints[0]} -> #{keypoints[i+1]}"
+      #log " #{keypoints[0]} -> #{keypoints[i+1]}"
       points = readPath keypoints[i], keypoints[i+1]
       for point in points
         fn point

@@ -19,51 +19,98 @@ write point clouds like a 3D Canvas
 
 ## usage
 
-```coffeescript
+``` javascript
 
-# initialise the potter
-pot = new Potter()
+  var Potter = require('potter');
 
-# create materials
-plastic = pot.createMaterial "plastic", "red"
-metal =   pot.createMaterial "metal",   "grey"
+  // initialize a voxel matrix
+  var pot = new Potter({
+    size: [100, 100, 100]
+  });
 
-# use a material for all next draw operations
-pot.use plastic
+  // define a new material
+  var plastic = pot.createMaterial("plastic", "red");
 
-# draw 3D dots (voxels)
-pot.dot [ 5, 5, 5 ]
-pot.dot [ 4, 5, 6 ]
-pot.dot [ 5, 3, 7 ]
+  // and use it
+  pot.use(plastic);
+  
+  // draw voxels using plastic
+  pot.dot([ 5, 5, 5 ]);
+  pot.dot([ 4, 5, 6 ]);
 
-# it's easier if you use it this way
-p1 = [20, 20, 15]
-p2 = [15, 40, 15]
-p3 = [30, 20, 30]
+  // it's easier if you use it this way
+  var p1 = [20, 20, 15];
+  var p2 = [15, 40, 15];
+  var p3 = [30, 20, 30];
 
-# you can draw lines as well
-pot.line p1, p3
+  // you can draw lines as well
+  pot.line(p1, p3);
 
-# potter can also walk 3D paths
-# a "pencil" function will be called for each point
-# warning: this can be quite slow for long paths
-# or slow drawing functions (like minutes or hours)
-path = [p1,p2,p3,p4]
-rad = 3
-pot.walk path, (p) -> 
-  pot.sphere p, rad
+  // you can also draw over a "3D path"
+  pot.trace([ p1, p2, p3 ], function(p) {
+    var radius = 3;
+    pot.sphere(p, radius);
+  });
 
-# you can save to a variety of point cloud formats
-pot.save "points.pcd"
-pot.save "points.pts"
-pot.save "points.xyz"
+  // you can save to a variety of point cloud formats
+  pot.save("model.pcd"); 
 
-# but also STL for 3D printing!
-pot.save "model.stl"
+  // experimental export to STL
+  pot.save("model.stl");
 
-# async syntax supported
-pot.save "model.stl", ->
-  console.log "done"
+  // async syntax is supported
+  pot.save("model.xyz", function() {
+    console.log("file saved");
+  });
+
+```
+
+## Demo
+
+### In CoffeeScript - please fasten your seatbelt!
+
+``` coffeescript
+#!/usr/bin/env coffee
+
+{log,error,inspect} = require 'util'
+Potter = require 'potter'
+
+name = "dog"
+
+# create a new voxel matrix
+dog = new Potter size: [100,100,100]
+
+# create a brown plastic material. let's call it "fur"
+fur = dog.createMaterial "plastic", "brown"
+dog.use fur
+
+# front
+pfr = [10, 10, 10]
+pft = [20, 20, 20]
+pfl = [10, 30, 10]
+
+# back
+pbr = [50, 10, 10]
+pbt = [40, 20, 20]
+pbl = [50, 30, 10]
+
+log "drawing.."
+leg =  (p) -> dog.sphere p, 4
+body = (p) -> dog.sphere p, 8
+
+# front legs
+dog.trace [pfr,pft,pfl], leg
+
+# body
+dog.trace [pft,pbt], body
+
+# back legs
+dog.trace [pbr,pbt,pbl], leg
+
+# export the dog voxel matrix to STL, for 3D printing
+log "saving.."
+dog.save "examples/exports/#{name}.stl", ->
+  log "file saved"
 
 ```
 
