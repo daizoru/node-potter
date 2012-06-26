@@ -129,6 +129,13 @@ class Potter
     ctx.stroke()
 
   
+  readVoxel: (x,y,z) =>
+    imgd = @slices[z][1].getImageData 0, 0, @width, @height
+    i = (x + y * @width) * 4
+    [r,g,b,a] = [imgd.data[i],imgd.data[i+1],imgd.data[i+2],imgd.data[i+3]]
+    @materials[rgbToInt(r, g, b)]
+
+
   save: (path,onComplete=->) => async =>
     # keep file extension. remove any / or \ for security purposes
     ext = path.split(".")[-1..]#.substr("/","").substr("\\","")
@@ -142,6 +149,10 @@ class Potter
 
     exp = new Exporter path,
       nbPoints: @nbPoints
+      width: @width
+      height: @height
+      depth: @depth
+      matrix: (x,y,z) => @readVoxel x, y, z
       onEnd: -> onComplete()
 
     z = -1
@@ -152,7 +163,6 @@ class Potter
       for x in [0...@width]
         for y in [0...@height]
           i = (x + y * @width) * 4
-          #log "i: #{i}"
           [r,g,b,a] = [imgd.data[i],imgd.data[i+1],imgd.data[i+2],imgd.data[i+3]]
           materialId = rgbToInt r, g, b
           material = @materials[materialId]
@@ -197,8 +207,8 @@ pot.draw 5, 5, 5, plastic
 pot.draw 4, 5, 6
 pot.draw 5, 3, 7, metal
 
-log "max size: #{pot.computeMaxSize()}"
-pot.save "examples/exports/test.pts", ->
+#log "max size: #{pot.computeMaxSize()}"
+pot.save "examples/exports/test.stl", ->
   log "file saved"
 
 #pot.save "examples/slices/test_"

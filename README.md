@@ -6,8 +6,11 @@ write point clouds like a 3D Canvas
 
 ## overview
 
-  For the moment 3D printers cannot read voxel formats,
-  so you may have to build your own 3D printer
+  For the moment 3D printers cannot read voxel-with-material formats,
+  so you may have to build your own 3D printer.
+
+  that said, you can try an experimental .STL export right now
+  (which basically create polygonal 3D cubes for each voxel)
 
 ## why
 
@@ -33,14 +36,25 @@ pot.draw 5, 3, 7, metal
 # you can save to a variety of point cloud formats
 pot.save "points.pcd"
 pot.save "points.pts"
+pot.save "points.xyz"
+
+# but also STL for 3D printing!
+pot.save "model.stl"
 
 # async syntax supported
-pot.save "points.xyz", ->
+pot.save "model.stl", ->
   console.log "done"
 
 ```
 
 ## Supported output format
+
+### STL
+
+  Yes! it is working! I got inspiration from
+
+  https://github.com/codys/minecraft.print/blob/master/minecraft_print.py
+
 
 ### PCD (Point Cloud Data)
 
@@ -96,19 +110,4 @@ DATA ascii
 5 3 7
 ```
 
-## Unsupported formats
-
-  For the moment AMF, STL.. are not supported.
-
-  Exporting voxels to a 3D printer-ready format is a tricky task,
-  because one need to convert voxels-filled shapes to polygons.
-
-  problem is most printers require the poly shapes to be without any holes,
-  which means models generated using automatic voxel converters are not satifying enough, and manual edit is necessary.
-
-  of course if you are coding your own 3D printer with arduino or things like this,
-  it should be less of a problem (because then I suppose you have control over slicing,
-  and can directly map and match the voxel resolution to your printer's resolution, and basic X/Y movements).
-
-  (btw I'm going to add a function to resize the voxels matrix, for this very last purpose)
 
