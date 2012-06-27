@@ -5,8 +5,10 @@
 fs = require 'fs'
 
 # third-party libs
-Canvas = require 'canvas'
+#Canvas = require 'canvas'
 #Color = require 'color'
+#  "snappy"            : "1.2.0",
+# "libyaml"           : "0.1.1",
 
 # module libs
 {wait,async} = require './toolbox'
@@ -52,7 +54,7 @@ readPath = (p1, p2) ->
   points
 
 
-toRGBString = (num) -> #num = parseInt color, 16
+toRGB = (num) -> #num = parseInt color, 16
   [ num >> 16, num >> 8 & 255, num & 255 ]
 
 rgbToInt = (r, g, b) -> (r << 16) + (g << 8) + b
@@ -74,12 +76,12 @@ class Material
   constructor: (@id,@name,@color,@type='continuous') ->
 
     # used for drawing
-    [r, g, b] = @rgb = toRGBString @id
+    [r, g, b] = @rgb = toRGB @id
     @rgbaString = "rgba(#{r},#{g},#{b},0)"
     @hexString = rgbToHex r, g, b
     @rgbInt = rgbToInt r, g, b
     
-    log "#{@}"
+    #log "#{@}"
   toString: ->
    "mat #{@id} (#{@name}) is #{@color} and #{@type}"
 
@@ -105,18 +107,9 @@ class module.exports
 
     # z is always the vertical axis
     @depth = Math.abs @size.z
-    
-    # initialize N layers
-    log "initializing #{@depth} slices"
-    @slices = []
-    for x in [0...@depth] # @height included
-      canvas = new Canvas @width, @height
-      ctx = canvas.getContext '2d'
-      @slices.push [ canvas, ctx ]
-    #log "slices: #{inspect @slices}"
 
-    @nbPoints = 0 # nb non-null points
-
+    @points = {}
+    @count = 0
     @materials = {}
     @currentMaterial = no
 
@@ -138,26 +131,10 @@ class module.exports
       throw msg
       return
 
-  dot: (p) ->
-    [canvas, ctx, imgd] = @slices[Math.round(p[2])]
-    # TODO handle cases where we ERASE points
-
-    old = @readVoxel p
-    #log "old of #{p}: #{old}"
-    if old.id isnt @currentMaterial
-      if @currentMaterial isnt 0
-        if old.id is 0
-          @nbPoints++
-      else
-        if @old.id isnt 0
-          @nbPoints--
-  
-      #log "material: #{inspect material.id}"
-      # draw it!
-      #log "drawing at (#{p[0]}, #{p[1]}) using: #{@currentMaterial.hexString}"
-      ctx.fillStyle = @currentMaterial.hexString
-      ctx.fillRect Math.round(p[0]), Math.round(p[1]), 1, 1
-      ctx.stroke()
+  dot: (p) =>
+    id = "#{Math.round(p[0])},#{Math.round(p[1])},#{Math.round(p[2])}"
+    @count++ unless id of @points
+    @points[id] = @currentMaterial
 
   line: (p1, p2, material=no) ->
     #log "p1: #{p1} p2: #{p2}"
@@ -194,11 +171,10 @@ class module.exports
         #@dot [x1,y1,z1]
 
   readVoxel: (p) =>
-    [x,y,z] = p
-    imgd = @slices[z][1].getImageData 0, 0, @width, @height
-    i = (x + y * @width) * 4
-    [r,g,b,a] = [imgd.data[i],imgd.data[i+1],imgd.data[i+2],imgd.data[i+3]]
-    @materials[rgbToInt(r, g, b)]
+    id = "#{Math.round(p[0])},#{Math.round(p[1])},#{Math.round(p[2])}" 
+    m = @points[id]
+    #log "id: #{id} -> #{m} -> #{@materials[0]}"
+    if m? then m else @materials[0]
 
   trace: (keypoints,fn) =>
     for i in [0...keypoints.length-1]
@@ -207,6 +183,11 @@ class module.exports
       for point in points
         fn point
 
+  
+  dig: =>
+
+
+  # save the voxels to a file
   save: (path,onComplete=->) => async =>
     # keep file extension. remove any / or \ for security purposes
     ext = path.split(".")[-1..]#.substr("/","").substr("\\","")
@@ -219,27 +200,32 @@ class module.exports
       return
 
     exp = new Exporter path,
-      nbPoints: @nbPoints
+      nbPoints: @count
       width: @width
       height: @height
       depth: @depth
       matrix: (p) => @readVoxel p
       onEnd: -> onComplete()
 
-    z = -1
-    for slice in @slices
-      z++
-      [canvas,ctx] = slice
-      imgd = ctx.getImageData 0, 0, @width, @height
-      for x in [0...@width]
-        for y in [0...@height]
-          i = (x + y * @width) * 4
-          [r,g,b,a] = [imgd.data[i],imgd.data[i+1],imgd.data[i+2],imgd.data[i+3]]
-          materialId = rgbToInt r, g, b
-          material = @materials[materialId]
-          exp.write x, y, z, material
+    wrote = 0
+    progress = 0
+    milestone = Math.round(@count * 0.1)
 
-    log "calling exp.close()"
+    log "writing voxels:"
+    for id,material of @points
+      s = id.split ','
+      [x,y,z] = [
+        parseInt s[0]
+        parseInt s[1]
+        parseInt s[2]
+      ]
+      exp.write x, y, z, material
+      wrote++
+      unless wrote % milestone
+        progress += 10
+        log " #{progress}% (#{wrote})" 
+
+    log " generated 100% (#{wrote}}) of geometries, writing to disk.."
     exp.close()
 
   savePng: (path=no) =>

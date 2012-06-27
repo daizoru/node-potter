@@ -1,21 +1,39 @@
+
 node-potter
 ===========
 
-
-write point clouds like a 3D Canvas
+Draw Something in 3D Space
 
 ## overview
+
+  A library to draw in a 3D canvas, and create things to be printed in 3D, like this beautiful dog:
+  
+  ![doogy](http://img528.imageshack.us/img528/518/doggy.png)
+   
+  I know, I know, it looks very realistic. You can do it, too! If you install this library.
 
   For the moment 3D printers cannot read voxel-with-material formats,
   so you may have to build your own 3D printer.
 
-  that said, you can try an experimental .STL export right now
+  That said, you can try an experimental .STL export right now
   (which basically create polygonal 3D cubes for each voxel)
+
 
 ## why
 
   Because it's funny. If you don't get why, you should probably 
   browse something else on Github.
+
+## install
+
+  globally:
+
+    $ npm install potter -g
+
+  as a dependency of your Node project:
+
+    $ npm install potter
+
 
 ## usage
 
@@ -78,25 +96,24 @@ Potter = require 'potter'
 name = "dog"
 
 # create a new voxel matrix
-dog = new Potter size: [100,100,100]
+dog = new Potter size: [1000,1000,1000]
 
 # create a brown plastic material. let's call it "fur"
 fur = dog.createMaterial "plastic", "brown"
 dog.use fur
 
 # front
-pfr = [10, 10, 10]
-pft = [20, 20, 20]
-pfl = [10, 30, 10]
+pfr = [100, 100, 100]
+pft = [200, 200, 200]
+pfl = [100, 300, 100]
 
 # back
-pbr = [50, 10, 10]
-pbt = [40, 20, 20]
-pbl = [50, 30, 10]
+pbr = [500, 100, 100]
+pbt = [400, 200, 200]
+pbl = [500, 300, 100]
 
-log "drawing.."
-leg =  (p) -> dog.sphere p, 4
-body = (p) -> dog.sphere p, 8
+leg  = (p) -> dog.sphere p, 10
+body = (p) -> dog.sphere p, 30
 
 # front legs
 dog.trace [pfr,pft,pfl], leg
@@ -114,9 +131,11 @@ dog.save "examples/exports/#{name}.stl", ->
 
 ```
 
-![doogy](http://img528.imageshack.us/img528/518/doggy.png)
+Should give you a 66MB .stl file:
 
- headless doggy
+![doogy](http://img641.imageshack.us/img641/3148/doggy2.png)
+
+ It contains 884.409 voxels, not optimized (the shape is filled with voxels, it's not hollow).
 
 ## Supported output format
 
@@ -181,4 +200,15 @@ DATA ascii
 5 3 7
 ```
 
+
+## Changelog
+
+### 0.0.1
+
+  * second, less crappy version 
+  * fucking much faster (except if you do export STL files)
+
+### 0.0.0
+
+  * initial crappy version
 

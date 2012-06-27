@@ -9,7 +9,7 @@ fs = require 'fs'
 class module.exports
 
   constructor: (@path, options) ->
-    @outStream = fs.createWriteStream @path, flags: 'w'
+    #@outStream = fs.createWriteStream @path, flags: 'w'
     @onEnd = if options.onEnd? then options.onEnd else ->
     @nbPoints = options.nbPoints
 
@@ -19,46 +19,50 @@ class module.exports
 
     @matrix = options.matrix
 
-    @str_e = "    endloop\n  endfacet\n"
-    @str_s = (x,y,z) -> "  facet normal #{x} #{y} #{y}\n    outer loop\n"
-    @str_v = (x,y,z) -> "      vertex #{x} #{y} #{z}\n"    
+    #@buff += "start\n"
+    @buff = "solid Pot\n"
 
-    #@outStream.write "start\n"
-    @outStream.write "solid Pot\n"
 
   close: =>
     #@outStream.close()
-    @outStream.write "endsolid Pot\n"
-    async =>
-      @onEnd()
+    @buff += "endsolid Pot\n"
+    fs.writeFile @path, @buff, (err) =>
+      throw err if err
+      async => @onEnd()
 
-  # http://www.laserscanning.org.uk/forum/viewtopic.php?f=22&t=743
   write: (x, y, z, material) =>
-    return if material.id is 0
-    #log "writing!"
+    return 0 if material.id is 0
+
+    end = "    endloop\n  endfacet\n"
+
+    n = (x,y,z) -> "  facet normal #{x} #{y} #{z}\n    outer loop\n"
+    v = (x,y,z) -> "      vertex #{x} #{y} #{z}\n"    
+
+    #log "writing #{x}#{y}#{z}"
     # intensity value 
     #(the fraction of incident radiation reflected by a surface)
     #X Y Z Intensity value R G B
     intensityValue = -300
     [r,g,b] = material.rgb
 
-    if x is 0 or @matrix([x-1,y,z]).id <= 0
-      @outStream.write [@str_s(-1,0,0),@str_v(x,z+1,y), @str_v(x,z,y+1), @str_v(x,z+1,y+1), @str_e].join('')
-      @outStream.write [@str_s(-1,0,0),@str_v(x,z+1,y), @str_v(x,z,y),@str_v(x,z,y+1),@str_e].join('')
+    if (x is 0) or @matrix([x-1,y,z]).id <= 0
+      @buff += "#{n -1,0,0  }#{v x,z+1,y   }#{v x,   z,  y+1}#{v x,  z+1,y+1}"+end
+      @buff += "#{n -1,0,0  }#{v x,z+1,y   }#{v x,   z,  y  }#{v x,  z,  y+1}"+end
     if x is @width-1 or @matrix([x+1,y,z]).id <= 0
-      @outStream.write [@str_s(1,0,0),@str_v(x+1,z+1,y), @str_v(x+1,z+1,y+1),@str_v(x+1,z,y+1),@str_e].join('')
-      @outStream.write [@str_s(1,0,0),@str_v(x+1,z+1,y), @str_v(x+1,z,y+1),@str_v(x+1,z,y),@str_e].join('')
+      @buff += "#{n  1,0,0  }#{v x+1,z+1,y }#{v x+1, z+1,y+1}#{v x+1,z,  y+1}"+end
+      @buff += "#{n  1,0,0  }#{v x+1,z+1,y }#{v x+1, z,  y+1}#{v x+1,z,  y  }"+end
     if (z is 0) or @matrix([x,y,z-1]).id <= 0
-      @outStream.write [@str_s(0,0,-1),@str_v(x,z,y), @str_v(x+1,z,y+1),@str_v(x,z,y+1),@str_e].join('')
-      @outStream.write [@str_s(0,0,-1),@str_v(x,z,y), @str_v(x+1,z,y),@str_v(x+1,z,y+1),@str_e].join('')
+      @buff += "#{n  0,0,-1 }#{v x,  z,  y }#{v x+1, z,  y+1}#{v x,  z,  y+1}"+end
+      @buff += "#{n  0,0,-1 }#{v x,  z,  y }#{v x+1, z,  y  }#{v x+1,z,  y+1}"+end
     if (z is @depth-1) or @matrix([x,y,z+1]).id <= 0
-      @outStream.write [@str_s(0,0,1),@str_v(x,z+1,y), @str_v(x,z+1,y+1),@str_v(x+1,z+1,y+1),@str_e].join('')
-      @outStream.write [@str_s(0,0,1),@str_v(x,z+1,y), @str_v(x+1,z+1,y+1),@str_v(x+1,z+1,y),@str_e].join('')
+      @buff += "#{n  0,0,1  }#{v x,  z+1,y }#{v x,   z+1,y+1}#{v x+1,z+1,y+1}"+end
+      @buff += "#{n  0,0,1  }#{v x,  z+1,y }#{v x+1, z+1,y+1}#{v x+1,z+1,y  }"+end
     if (y is 0) or @matrix([x,y-1,z]).id <= 0
-      @outStream.write [@str_s(0,-1,0),@str_v(x+1,z,y), @str_v(x,z+1,y),@str_v(x+1,z+1,y),@str_e].join('')
-      @outStream.write [@str_s(0,-1,0),@str_v(x+1,z,y), @str_v(x,z,y),@str_v(x,z+1,y),@str_e].join('')
+      @buff += "#{n  0,-1,0 }#{v x+1,z,  y }#{v x,  z+1, y  }#{v x+1,z+1,y  }"+end
+      @buff += "#{n  0,-1,0 }#{v x+1,z,  y }#{v x,  z,   y  }#{v x,  z+1,y  }"+end
     if (y is @height-1) or @matrix([x,y+1,z]).id <= 0
-      @outStream.write [@str_s(0,1,0),@str_v(x+1,z,y+1), @str_v(x+1,z+1,y+1),@str_v(x,z+1,y+1),@str_e].join('')
-      @outStream.write [@str_s(0,1,0),@str_v(x+1,z,y+1), @str_v(x,z+1,y+1),@str_v(x,z,y+1),@str_e].join('')
+      @buff += "#{n  0,1,0  }#{v x+1,z,y+1}#{v x+1,z+1, y+1 }#{v x,  z+1,y+1}"+end
+      @buff += "#{n  0,1,0  }#{v x+1,z,y+1}#{v x,  z+1, y+1 }#{v x,  z,  y+1}"+end
+    1
 
        
