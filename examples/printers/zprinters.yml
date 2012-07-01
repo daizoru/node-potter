@@ -1,0 +1,76 @@
+# collection / constructor
+zcorp:
+
+  # model short name / code
+  zprinter850:
+
+    # full name
+    model: ZPrinter® 850
+
+    # supported features
+    capabilities:
+
+      # list of supported resolutions, in DPI
+      resolutions:
+        - 600x540
+
+      # layer thickness, in inches
+      layerThickness: [0.0035in, 0.004in]
+
+      # max object size, in inches
+      size: 
+        x: 20
+        y: 15
+        z: 9
+
+      # list of supported materials
+      materials:
+        -
+          code: composite                  # a short name / code
+          name: High-Performance Composite  # full designation
+          color: any                        # supported colors?
+
+        -
+          code: directcast
+          name: Direct Casting Metal
+          color: [255,255,255]
+
+        -
+          code: investcast
+          name: Investment Casting
+
+          properties:
+            color: [255,255,255]
+
+        -
+          code: zsnapfit
+          name: Snap-Fit
+
+       -
+          code: elasto
+          name: elastomeric
+        
+
+      # list of supported input formats
+      inputFormats:
+        - 
+          name: STL (Stereo Lithography)
+          ext: .stl
+          version: *
+        - 
+          name: VRML (Virtual Reality Modeling Language)
+          ext: .vrml
+          version: 2.0
+        - 
+          name: PLY (Polygon File Format)
+          ext: .ply
+          version: *
+        - 
+          name: 3DS (3D Studio Max Format)
+          ext: .3ds
+          version: *
+        - 
+          name: ZPR (ZPrinter® Format)
+          ext: .zpr
+          version: *
+        

@@ -12,18 +12,32 @@ dog = new Potter size: [1000,1000,1000]
 fur = dog.createMaterial "plastic", "brown"
 dog.use fur
 
+# nose
+nse = [130, 200, 160]
+
 # front
-pfr = [100, 100, 100]
-pft = [200, 200, 200]
-pfl = [100, 300, 100]
+pfr = [100, 130,  50]
+pft = [150, 200, 130]
+pfl = [100, 270,  50]
 
 # back
-pbr = [500, 100, 100]
-pbt = [400, 200, 200]
-pbl = [500, 300, 100]
+pbr = [300, 130,  50]
+pbt = [250, 200, 130]
+pbl = [300, 270,  50]
 
-leg = (p) -> dog.sphere p, 10
-body = (p) -> dog.sphere p, 30
+# tail
+tab = [250, 200, 130]
+tat = [280, 200, 170]
+
+nose = (p) -> dog.sphere p, 8
+leg =  (p) -> dog.sphere p, 12
+body = (p) -> dog.sphere p, 32
+tail = (p) -> dog.sphere p, 8
+# nose
+
+log "drawing nose.."
+dog.trace [nse], (p) ->
+  dog.sphere p, 8
 
 # front legs
 log "drawing front legs.."
@@ -36,6 +50,10 @@ dog.trace [pft,pbt], body
 # back legs
 log "drawing back legs.."
 dog.trace [pbr,pbt,pbl], leg
+
+# tail
+log "drawing tail.."
+dog.trace [tab,tat], tail
 
 # export the dog voxel matrix to STL, for 3D printing
 log "saving #{dog.count} voxels.."

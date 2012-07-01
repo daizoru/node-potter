@@ -18,6 +18,11 @@ log "drawing.."
 pot.dot p1
 pot.line p1, p2
 
+
+# I think node-potter would work nicely with 
+# https://github.com/osuushi/Smooth.js
+# this is something I should try in the future
+
 # export the dog voxel matrix to STL, for 3D printing
 log "saving.."
 pot.save "examples/exports/simple.stl", ->

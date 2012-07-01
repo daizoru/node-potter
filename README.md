@@ -13,7 +13,7 @@ Draw Something in 3D Space
   I know, I know, it looks very realistic. You can do it, too! If you install this library.
 
   For the moment 3D printers cannot read voxel-with-material formats,
-  so you may have to build your own 3D printer.
+  so you may have to build your own 3D printer (which I started to do myself)
 
   That said, you can try an experimental .STL export right now
   (which basically create polygonal 3D cubes for each voxel)

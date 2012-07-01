@@ -1,0 +1,94 @@
+# collection / constructor
+diy:
+
+  # model short name / code
+  bio:
+
+    # full name
+    model: bio printer
+
+    # supported features
+    capabilities:
+
+      # list of supported resolutions, in DPI
+      resolutions:
+        - 100x100
+
+      # layer thickness, in inches
+      layerThickness: [0.01in, 0.01in]
+
+      # max object size, in inches
+      size: 
+        x: 100
+        y: 100
+        z: 100
+
+      # list of supported materials
+      materials:
+
+        -
+          code: suspension:
+          name: Suspension material
+          color: [200, 200, 200]
+
+        - 
+          code: alginate
+          name: Sodium Alginate
+          description: algae gum
+          color: [255,255,255]
+
+          properties:
+            formula: Na C6 H7 O6
+            density: ?
+            melting: ?
+            e-code: E401
+      
+          settings:
+            pressure: 80psi
+            needleSize: 20GA
+            feedRate: 3000
+            lineWidth: 0.60
+            stopDistance: 2
+
+        -
+          code: pcl
+          name: Polycaprolactone
+          description: bio-degradable
+
+          properties:
+            color: [255,255,255]
+
+
+        -
+          code: pla
+          name: Polylactic acid
+          description: a biodegradable plastic made from corn
+
+          properties:
+            foodCompatible: true
+            edible: false
+            bioDegradable: true
+            toxic: false
+            formula: (C3 H4 O2)n
+            density: 1.300 g/cm³
+            melting: [150°C,160°C]
+            color: any
+            waterSolubility: false
+            
+          settings:
+            pressure: 80psi
+            needleSize: 20GA
+            feedRate: 3000
+            lineWidth: 0.60
+            stopDistance: 2
+
+
+      # list of supported input formats
+      inputFormats:
+        - 
+          name: Potter Format
+          ext: .pot
+          version: *
+        -
+          name: GCode Program
+          ext: * # no standard

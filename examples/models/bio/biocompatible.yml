@@ -1,0 +1,96 @@
+project:
+  name: sample
+  author: Amoebozoa
+  size:
+    x: [ -10 , 10 ]
+    y: [ -10 , 10 ]
+    z: [ -10 , 10 ]
+    unit: 1cm
+
+  materials:
+
+    suspension:
+      name: Suspension material
+      color: [200, 200, 200]
+
+    pcl:
+      name: Polycaprolactone
+      description: a bio-degradable plastic
+
+      properties:
+        color: [255,255,255]
+
+
+    pla:
+      name: Polylactic acid
+      description: a biodegradable plastic made from corn
+
+      properties:
+        foodCompatible: true
+        edible: false
+        bioDegradable: true
+        toxic: false
+        formula: (C3 H4 O2)n
+        density: 1.300 g/cm³
+        melting: [150°C,160°C]
+        color: any
+        waterSolubility: false
+        
+      settings:
+        pressure: 80psi
+        needleSize: 20GA
+        feedRate: 3000
+        lineWidth: 0.60
+        stopDistance: 2
+
+    silicone:
+      name: Silicon
+      description: 
+      color: [59,34,7]
+
+      properties:
+        foodCompatible: false
+        edible: false
+        bioDegradable: false
+        toxic: false
+        formula: 
+        density: 
+        melting: 
+        color: any
+        waterSolubility: false
+
+      settings:
+        pressure: 80psi
+        needleSize: 20GA
+        feedRate: 3000
+        lineWidth: 0.60
+        stopDistance: 2
+
+  global:
+    # standard state (at 25 °C, 100 kPa)
+    roomTemperature: 20°c # chocolat should not melt under 25°c
+
+# when save a node-plotter program, voxels are not saved but path is 
+# order of paths is meaningful
+# note: in the end, all path layers are merged, and only the final result
+# is exported to GCODE
+# paths are "pen down" paths
+
+  # depends on the printer
+
+
+  paths:
+    - 
+      material: pla
+      radius: 3
+      path:
+        - [0,0,0]
+        - [1,1,1]
+
+    - 
+      material: pcl
+      radius: 2
+      path:
+        - [0,0,0]
+        - [1,1,1]
+    

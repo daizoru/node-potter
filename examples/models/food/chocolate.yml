@@ -1,0 +1,77 @@
+project:
+  name: chocolate
+  author: Wonka Industries Inc.
+  size:
+    x: [ -10 , 10 ]
+    y: [ -10 , 10 ]
+    z: [ -10 , 10 ]
+    unit: 1cm
+
+  # a library of materials
+  materials:
+
+    dark:
+      name: Chocolat Noir
+      description: doit contenir au minimum 35% de cacao. Autres ajouts : sucre.
+      color: [59,34,7]
+
+      other:
+        calories: 2050 kJ
+
+        # molten chocolate 45,000–130,000 - see http://en.wikipedia.org/wiki/Viscosity
+        viscosity: [45000, 130000] 
+    superior: 
+      name: Chocolat Supérieur
+      description: doit contenir au minimum 43% de cacao. Autres ajouts : sucre.
+      color: [43,25,5]
+
+    milk: 
+      name: Chocolat au lait
+      description:  doit contenir au minimum 25% de cacao (en Union Européenne ; 10% aux USA). Autres ajouts : lait (poudre ou concentré) et sucre.
+      color: [99,55,7]
+
+      other:
+        calories: 2100 kJ
+
+    fine: 
+      name: Chocolat au lait extra fin
+      description: doit contenir au minimum 30% de cacao. Autres ajouts : lait (poudre ou concentré) et sucre.
+      color: [77,48,17]
+
+    white:
+      name: Chocolat blanc
+      description: "beurre de cacao, lait, sucre, arômes. Il ne contient pas de poudre de cacao."
+      color: [250,249,222]
+
+      # got inspiration from the open FAB format
+      clearance    : 2
+      depositRate  : 0.0035
+      pathSpeed    : 10
+      pathWidth    : 3
+      pausePaths   : 300
+      pitch        : 0.000397
+      pushout      : 0.2
+      suckback     : 0.13
+      suckbackDelay: 0
+
+      # 
+      opTemperature: 37°C
+
+  settings:
+    temperature: 20°c
+
+  paths:
+    - 
+      material: dark
+      radius: 3
+      path:
+        - [0,0,0]
+        - [1,1,1]
+
+    - 
+      material: white
+      radius: 2
+      path:
+        - [0,0,0]
+        - [1,1,1]
+    

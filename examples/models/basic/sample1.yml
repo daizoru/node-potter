@@ -17,6 +17,19 @@ scene:
       color: brown
       type : continous
 
+      # got inspiration from the open FAB format
+      clearance    : 2
+      depositRate  : 0.0035
+      pathSpeed    : 10
+      pathWidth    : 3
+      pausePaths   : 300
+      pitch        : 0.000397
+      pushout      : 0.2
+      suckback     : 0.13
+      suckbackDelay: 0
+      # 
+      opTemperature: 30°C
+
 matrices:
   ma1:
     material: clay1

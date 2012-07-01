@@ -1,0 +1,39 @@
+# collection / constructor
+virtual:
+
+  # model short name / code
+  printer:
+
+    # full name
+    model: Virtual Printer
+
+    # supported features
+    capabilities:
+
+      # list of supported resolutions, in DPI
+      resolutions:
+        - [Infinity, Infinity]
+
+      # layer thickness, in inches
+      layerThickness: [Infinity, Infinity]
+
+      # max object size, in inches
+      size: 
+        x: Infinity
+        y: Infinity
+        z: Infinity
+
+      # list of supported materials
+      materials:
+        -
+          code: any
+          name: any matter
+          color: any                        # supported colors?
+        
+      # list of supported input formats
+      inputFormats:
+        - 
+          name: Potter Format
+          ext: .pot
+          version: *
+

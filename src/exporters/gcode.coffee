@@ -1,18 +1,51 @@
 
-class Exporter
 
-  constructor: ->
+# todo: add ourselve to this list: http://replicat.org/generators
+
+# the gcode will be read by ReplicatorG
+# ReplicatorG is a GCode controller for RepRap compatible machines.
+# http://code.google.com/p/replicatorg/source/browse/trunk/src/replicatorg/app/GCodeParser.java
 
 
-  # http://www.laserscanning.org.uk/forum/viewtopic.php?f=22&t=743
-  save: ->
+fs = require 'fs'
 
-    #XYZ File
-    # exports XYZ data for each point cloud, vertex or sphere -
-    #this format provides a continuous point listing with no 
-    #indication of the start of new point clouds. Coordinates
-    # are transformed into the current user coordinate system
-    # and scaled for the current unit of measure.
-    buff = ""
-    for p in points
-      buff += "#{x} #{y} #{z}\n" # no material
+{wait,async} = require "../toolbox"
+
+class Program
+
+  constructor: (name="") ->
+    @b = "0#{name}\n"
+
+  absolutePositionning: => @b += "G90\n"
+  coolingFan: (enable=yes) => @b += if enable then "M106\n" else "M107\n"
+
+  changeTool: (id=0) => @b += "M06 #{id}\n"
+
+
+  toString: => @b
+
+class module.exports
+
+  constructor: (@path, options) ->
+    @outStream = fs.createWriteStream @path, flags: 'w'
+    @onEnd = if options.onEnd? then options.onEnd else ->
+    @headerWritten = no
+
+    @nbPoints = options.nbPoints
+
+    @program = new Program "1234"
+
+
+
+  close: =>
+    #@outStream.close()
+    async =>
+      @onEnd()
+
+
+
+  # http://pointclouds.org/documentation/tutorials/pcd_file_format.php
+  write: (x, y, z, material) =>
+    return if material.id is 0
+    # @writeHeader() unless @headerWritten
+    @outStream.write "#{x} #{y} #{z} #{material.rgbInt}\n" # no material
