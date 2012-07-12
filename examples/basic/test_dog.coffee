@@ -30,15 +30,15 @@ pbl = [300, 270,  50]
 tab = [250, 200, 130]
 tat = [280, 200, 170]
 
-nose = (p) -> dog.sphere p, 8
-leg =  (p) -> dog.sphere p, 12
-body = (p) -> dog.sphere p, 32
-tail = (p) -> dog.sphere p, 8
-# nose
+nose = (p) -> dog.sphere p, 6, 8
+leg =  (p) -> dog.sphere p, 8, 10
+body = (p) -> dog.sphere p, 20, 22
+tail = (p) -> dog.sphere p, 6, 8
+# nose, 
 
 log "drawing nose.."
 dog.trace [nse], (p) ->
-  dog.sphere p, 8
+  dog.sphere p, 5, 6
 
 # front legs
 log "drawing front legs.."

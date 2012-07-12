@@ -72,7 +72,7 @@ Draw Something in 3D Space
   // you can also draw over a "3D path"
   pot.trace([ p1, p2, p3 ], function(p) {
     var radius = 3;
-    pot.sphere(p, radius, 2);
+    pot.sphere(p, radius, radius + 2);
   });
 
   // you can save to a variety of point cloud formats
@@ -117,8 +117,8 @@ pbr = [500, 100, 100]
 pbt = [400, 200, 200]
 pbl = [500, 300, 100]
 
-leg  = (p) -> dog.sphere p, 10, 2
-body = (p) -> dog.sphere p, 30, 2
+leg  = (p) -> dog.sphere p, 10, 12
+body = (p) -> dog.sphere p, 30, 32
 
 # front legs
 dog.trace [pfr,pft,pfl], leg
@@ -136,12 +136,30 @@ dog.save "examples/exports/#{name}.stl", ->
 
 ```
 
-Should give you this:
+  Then if you run it: 
+
+
+    $ coffee examples/basic/test_dog.coffee 
+
+  It should give you this:
 
 ![doggy](http://img641.imageshack.us/img641/3148/doggy2.png)
 
-With a lot of voxels. Really. A lot.
+  With a lot of voxels. Really. A lot.
 
+  WARNING: it make take a couple of MINUTES for Node.js
+  to write all the buffer to disk (this happens AFTER the "file saved" msg,
+  and freeze the app for some time)
+
+## Running the other examples
+
+### Sponge
+
+    $ coffee examples/basic/ref_sponge.coffee 
+
+### Egg
+
+    $ coffee examples/basic/ref_egg.coffee 
 
 ## List of functions
 
