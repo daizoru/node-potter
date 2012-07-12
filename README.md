@@ -25,7 +25,7 @@ Draw Something in 3D Space
   browse something else on Github.
 
 ## TODO
-
+  * better file stream support (currently buffer saturate)
   * support binary STL (and colors)
   * implement more materials: http://www.matbase.com/matbase_material_properties_database.html
 
@@ -52,7 +52,7 @@ Draw Something in 3D Space
   });
 
   // define a new material
-  var plastic = pot.createMaterial("plastic", "red");
+  var plastic = pot.material("plastic", "red");
 
   // and use it
   pot.use(plastic);
@@ -72,7 +72,7 @@ Draw Something in 3D Space
   // you can also draw over a "3D path"
   pot.trace([ p1, p2, p3 ], function(p) {
     var radius = 3;
-    pot.sphere(p, radius);
+    pot.sphere(p, radius, 2);
   });
 
   // you can save to a variety of point cloud formats
@@ -104,7 +104,7 @@ name = "dog"
 dog = new Potter size: [1000,1000,1000]
 
 # create a brown plastic material. let's call it "fur"
-fur = dog.createMaterial "plastic", "brown"
+fur = dog.material "plastic", "brown"
 dog.use fur
 
 # front
@@ -117,8 +117,8 @@ pbr = [500, 100, 100]
 pbt = [400, 200, 200]
 pbl = [500, 300, 100]
 
-leg  = (p) -> dog.sphere p, 10
-body = (p) -> dog.sphere p, 30
+leg  = (p) -> dog.sphere p, 10, 2
+body = (p) -> dog.sphere p, 30, 2
 
 # front legs
 dog.trace [pfr,pft,pfl], leg
@@ -136,17 +136,81 @@ dog.save "examples/exports/#{name}.stl", ->
 
 ```
 
-Should give you a 66MB .stl file:
+Should give you this:
 
 ![doggy](http://img641.imageshack.us/img641/3148/doggy2.png)
 
- It contains 884.409 voxels, not optimized (the shape is filled with voxels, it's not hollow).
+With a lot of voxels. Really. A lot.
+
 
 ## List of functions
 
-### Potter::section()
+###
 
- Use this function to cut a model in 
+  Documentation legend
+
+```scala
+  foo ({ x:Number });
+```
+  means function foo takes an object as argument, this object should have an entry with key 'x' and value of type Number
+
+
+```scala
+  foo ( x=Number ); 
+```
+  means function foo takes one argument, x, which should be a Number
+
+
+
+### pot = new Potter({size:[x,y,z]})
+
+### Material m = pot.material({ })
+
+  Create a material
+ 
+### pot.use(material=Material)
+
+  Use a material for all next drawing operations
+
+### pot.dot(position=[x,y,z])
+
+  Draw a voxel at a give coordinate
+
+### pot.line(from=[x1,y1,z1], to=[x2,y2,z2])
+
+  Draw a line in 3D
+
+### pot.sphere(position=[x,y,z], inner=Number, outer=Number)
+
+  Draw a sphere, using a center, inner radius (radius of the inside hole), and outer radius (the 'real' radius)
+
+### pot.section(position=[x,y,z],plane=[u,v,w])
+
+Cut the model - do a section (nice for autopsy or medical research)
+
+Where x,y,z are the center of the section plane,
+and u,v,w is the plane axis. example:
+
+```javascript
+pot.section([x,y,z], [1,0,0]);
+```
+
+will cut the model in half, on the X axis,
+
+```javascript
+pot.section([x,y,z], [-1,0,0]);
+```
+
+will cut the model in half, on the X axis, but in the other direction, and:
+
+```javascript
+pot.section([x,y,z], [0,1,1]);
+```
+
+will cut the model in a quarter, on the Y/Z axis.
+
+
+
 ## Supported output format
 
 ### STL
