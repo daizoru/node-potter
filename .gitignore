@@ -1,3 +1,4 @@
+ignored/*
 .DS_Store
 *.png
 examples/exports/*

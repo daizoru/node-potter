@@ -1,6 +1,7 @@
+ignored/*
 .DS_Store
 *.png
-examples/exports/¨*
+examples/exports/*
 examples/slices/*
 lib-cov
 *.seed

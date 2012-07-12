@@ -19,14 +19,14 @@ fs = require 'fs'
 # we use node-canvas for all drawing operation
 # because it's faster and mature
 
-len = (p1, p2) ->
+len = (p1, p2,round=yes) ->
   dx = p2[0] - p1[0]
   dy = p2[1] - p1[1]
   dz = p2[2] - p1[2]
 
   sm = dx*dx + dy*dy + dz*dz
   #log "sm: #{sm}"
-  Math.round(Math.sqrt sm)
+  if round then Math.round(Math.sqrt(sm)) else Math.sqrt(sm)
 
 readPath = (p1, p2) ->
   dx = p2[0] - p1[0]
@@ -73,17 +73,32 @@ setPixel = (img, x, y, r, g, b, a) ->
 
 class Material
 
-  constructor: (@id,@name,@color,@type='continuous') ->
+  constructor: (@id, params={}) ->
+    config =
+      name: "default"
+      type: "continuous"
+      color: "grey"
+      density:  1.43e6 # grams by cube meter
+      scale: 1e-2 # 
+      data: {}
+    config[k] = v for k,v of params
+    @[k] = v for k,v of config
 
     # used for drawing
     [r, g, b] = @rgb = toRGB @id
     @rgbaString = "rgba(#{r},#{g},#{b},0)"
     @hexString = rgbToHex r, g, b
     @rgbInt = rgbToInt r, g, b
+
+    @count = 0
     
     #log "#{@}"
   toString: ->
    "mat #{@id} (#{@name}) is #{@color} and #{@type}"
+
+  computeMass: ->
+    @mass * count
+
 
 class module.exports
 
@@ -109,68 +124,94 @@ class module.exports
     @depth = Math.abs @size.z
 
     @points = {}
+
     @count = 0
     @materials = {}
     @currentMaterial = no
 
     # create material #0, which is basically empty space in the model
-    @createMaterial "vacuum", "invisible", "vacuum"
+    @vacuum = @material name: "vacuum", color: "invisible", type: "vacuum"
 
-  createMaterial: (name, color, type) ->
+  material: (params={}) ->
     id = Object.keys(@materials).length
-    material = new Material id, name, color, type
+    material = new Material id, params
     @materials[id] = material
     material
 
-  use: (material) ->
-    if material
-      @currentMaterial = material
-    else
-      msg = "Error, no material"
-      error msg
-      throw msg
-      return
+  use: (material) -> 
+    @currentMaterial = if material then material else @vacuum
 
-  dot: (p) =>
+
+  dot: (p, overwrite) =>
+    @set p, @currentMaterial, overwrite
+
+  # set a dot
+  set: (p, m, overwrite=no) =>
     id = "#{Math.round(p[0])},#{Math.round(p[1])},#{Math.round(p[2])}"
-    @count++ unless id of @points
-    @points[id] = @currentMaterial
+    if !m or m.id is 0
+      if id of @points
+        #log "deleting with fire!!"
+        delete @points[id]
+        @count--
+        # do not increment vacuum counter
+    else
+      if id of @points
+        # ifEmpty option allow use to not add stuff in existing matter
+        unless overwrite
+          return
+      else
+        @count++
+        m.count++ # increment all other counters
+      @points[id] = m
 
-  line: (p1, p2, material=no) ->
+  line: (p1, p2, overwrite) ->
     #log "p1: #{p1} p2: #{p2}"
     points = readPath p1, p2
     #log "drawing points"
     #console.dir points
-    @dot p for p in points
+    @dot p, overwrite for p in points
 
   #face: (p1, p2) ->
   #  width = len 
-    
-  sphere: (p, radius) =>
+  
+  each: (kernel) =>
+    for id,material of @points
+      s = id.split ','
+      position = [
+        parseInt s[0]
+        parseInt s[1]
+        parseInt s[2]
+      ]
+      kernel position, material
 
-    res = radius
-    M = res * 3
-    N = res * 6
-    f = (m,n) -> [
-      Math.sin(Math.PI * m/M) * Math.cos(Math.PI*2 * n/N)
-      Math.sin(Math.PI * m/M) * Math.sin(Math.PI*2 * n/N)
-      Math.cos(Math.PI * m/M)
-    ]
+  map: (kernel) =>
+    for id,material of @points
+      s = id.split ','
+      position = [
+        parseInt s[0]
+        parseInt s[1]
+        parseInt s[2]
+      ]
+      @set position, kernel(position, material)
 
-    for m in [0..M]
-      for n in [0...N]
-        s = f m,n
+  sphere: (center, inner, outer, overwrite) =>
+    i = inner
+    o = outer
+    c = center
+    for x in     [ c[0]-o .. c[0]+o ]
+      for y in   [ c[1]-o .. c[1]+o ]
+        for z in [ c[2]-o .. c[2]+o ]
+          @dot [x,y,z], overwrite if i <= len(c, [x,y,z]) <= o
 
-        [x,y,z] = [
-          Math.round(p[0] + s[0]*radius)
-          Math.round(p[1] + s[1]*radius)
-          Math.round(p[2] + s[2]*radius)
-        ]
-        #console.log "#{[x,y,z]}"
-        @dot [x,y,z]
-        #@dot [x1,y1,z1]
+  # cut a model in half, using a center (c) and a plane (v)
+  section: (c, v) =>
+    @map (p, m) =>
+      return if (v[0] < 0 and p[0] > c[0]) or (v[0] > 0 and p[0] < c[0])
+      return if (v[1] < 0 and p[1] > c[1]) or (v[1] > 0 and p[1] < c[1])
+      return if (v[2] < 0 and p[2] > c[2]) or (v[2] > 0 and p[2] < c[2])
+      m
 
-  readVoxel: (p) =>
+  get: (p) =>
     id = "#{Math.round(p[0])},#{Math.round(p[1])},#{Math.round(p[2])}" 
     m = @points[id]
     #log "id: #{id} -> #{m} -> #{@materials[0]}"
@@ -183,9 +224,12 @@ class module.exports
       for point in points
         fn point
 
+  # helper function, to translate things
+  rename: (translations) =>
+    for oldName, newName of translations
+      @[newName] = @[oldName] if oldName of @
   
   dig: =>
-
 
   # save the voxels to a file
   save: (path,onComplete=->) => async =>
@@ -204,29 +248,24 @@ class module.exports
       width: @width
       height: @height
       depth: @depth
-      matrix: (p) => @readVoxel p
-      onEnd: -> onComplete()
+      matrix: (p) => @get p
 
     wrote = 0
     progress = 0
     milestone = Math.round(@count * 0.1)
 
     log "writing voxels:"
-    for id,material of @points
-      s = id.split ','
-      [x,y,z] = [
-        parseInt s[0]
-        parseInt s[1]
-        parseInt s[2]
-      ]
-      exp.write x, y, z, material
+    @each (position, material) =>
+      exp.write position, material
       wrote++
       unless wrote % milestone
         progress += 10
         log " #{progress}% (#{wrote})" 
 
-    log " generated 100% (#{wrote}}) of geometries, writing to disk.."
-    exp.close()
+    log " 100% (#{wrote}) writing buffer to disk (can take a couple of minutes).."
+    async =>
+      exp.close onComplete
+    return
 
   savePng: (path=no) =>
     log "saving:"

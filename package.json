@@ -1,7 +1,7 @@
 {
   "name"        : "potter",
   "description" : "Draw something in 3D space",
-  "version"     : "0.0.1",
+  "version"     : "0.0.2",
   "repository"  : { "type": "git", "url": "git://github.com/daizoru/node-potter.git" },
   "license"     : "BSD",
   "author"      : { "name" : "Julian Bilcke", "email" : "julian.bilcke@daizoru.com", "url" : "http://github.com/daizoru" },
@@ -15,7 +15,8 @@
     "html"      : "mocha --reporter doc"
   },
   "dependencies": {
-     "pkginfo"     : "0.2.x"
+     "pkginfo"     : "0.2.x",
+     "put"         : "0.0.6"
   },
   "devDependencies": {
     "should"        : "0.6.x",

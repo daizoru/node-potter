@@ -24,6 +24,11 @@ Draw Something in 3D Space
   Because it's funny. If you don't get why, you should probably 
   browse something else on Github.
 
+## TODO
+
+  * support binary STL (and colors)
+  * implement more materials: http://www.matbase.com/matbase_material_properties_database.html
+
 ## install
 
   globally:
@@ -133,10 +138,15 @@ dog.save "examples/exports/#{name}.stl", ->
 
 Should give you a 66MB .stl file:
 
-![doogy](http://img641.imageshack.us/img641/3148/doggy2.png)
+![doggy](http://img641.imageshack.us/img641/3148/doggy2.png)
 
  It contains 884.409 voxels, not optimized (the shape is filled with voxels, it's not hollow).
 
+## List of functions
+
+### Potter::section()
+
+ Use this function to cut a model in 
 ## Supported output format
 
 ### STL
@@ -202,6 +212,13 @@ DATA ascii
 
 
 ## Changelog
+
+### 0.0.2
+ 
+  * better Potter::sphere() algorithm, with optional thickness (useful for fillings!)
+  * added Potter::section(), you can use it to cut a model for autopsy
+  * added Potter.vacuum, which is a shortcut to material 0 (vacuum)
+  * various minor bugfixes
 
 ### 0.0.1
 

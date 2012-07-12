@@ -96,7 +96,8 @@ class module.exports
 
 
   # http://pointclouds.org/documentation/tutorials/pcd_file_format.php
-  write: (x, y, z, material) =>
+  write: (position, material) =>
     return if material.id is 0
+    [x, y, z] = position
     # @writeHeader() unless @headerWritten
     @outStream.write "#{x} #{y} #{z} #{material.rgbInt}\n" # no material

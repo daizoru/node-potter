@@ -49,9 +49,10 @@ class module.exports
       @onEnd()
 
   # http://www.laserscanning.org.uk/forum/viewtopic.php?f=22&t=743
-  write: (x, y, z, material) =>
+  write: (position, material) =>
     return if material.id is 0
     log "writing!"
+    [x, y, z] = position
     # intensity value 
     #(the fraction of incident radiation reflected by a surface)
     #X Y Z Intensity value R G B
