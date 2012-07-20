@@ -194,6 +194,27 @@ class module.exports
       ]
       @set position, kernel(position, material)
 
+  filter: (kernel) =>
+    @map (p, state) -> return state if (kernel(p, state))
+
+  reduce: (accumulator, kernel) =>
+    acc = accumulator
+    @map (p, state) ->
+      acc = kernel acc, p, state
+    acc
+    
+  sum: (kernel) =>
+    acc = 0
+    @map (p, state) ->
+      acc += kernel p, state
+    acc
+    
+  reduce: (accumulator, kernel) =>
+    acc = accumulator
+    @map (p, state) ->
+      acc = kernel acc, p, state
+    acc
+
   sphere: (center, inner, outer, overwrite) =>
     i = inner
     o = outer
