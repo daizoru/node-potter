@@ -13,6 +13,8 @@ fs = require 'fs'
 # module libs
 {wait,async} = require './toolbox'
 
+toInt = Math.round
+
 # we use color 0.4.1, but we could also use:
 # https://github.com/One-com/one-color
 
@@ -47,10 +49,14 @@ readPath = (p1, p2) ->
   for i in [0..resolution]
     #log "ok: #{i}"
     r = i / resolution # ratio
-    x = Math.round( p1[0] + dx * r )
-    y = Math.round( p1[1] + dy * r )
-    z = Math.round( p1[2] + dz * r )
-    points.push [x,y,z]
+    x = p1[0] + dx * r 
+    y = p1[1] + dy * r
+    z = p1[2] + dz * r
+    points.push [
+      toInt x
+      toInt y
+      toInt z
+    ]
   points
 
 
@@ -73,7 +79,7 @@ setPixel = (img, x, y, r, g, b, a) ->
 
 class Material
 
-  constructor: (@id, params={}) ->
+  constructor: (@id, @params={}) ->
     config =
       name: "default"
       type: "continuous"
@@ -100,7 +106,41 @@ class Material
     @mass * count
 
 
-class module.exports
+# online barycenter
+class Barycenter
+  constructor: (@pot) ->
+    @sums = [0,0,0]
+    @cache = [0,0,0]
+    @revision = -1
+
+  insert: (p,m) =>
+    @sums = [
+      @sums[0] + p[0]
+      @sums[1] + p[1]
+      @sums[2] + p[2]
+    ]
+
+  delete: (p,m) =>
+    @sums = [
+      @sums[0] - p[0]
+      @sums[1] - p[1]
+      @sums[2] - p[2]
+    ]
+
+  value: =>
+    log "computing barycenter"
+    if @pot.revision == @revision
+      @cache
+    else
+      N = @count
+      center = @sums
+      center = [center[0] / N, center[1] / N, center[2] / N] if N >= 1
+      @cache = center
+      @revision = @pot.revision
+
+    @cache
+
+class Potter
 
   constructor: (options) ->
     @size =
@@ -129,8 +169,15 @@ class module.exports
     @materials = {}
     @currentMaterial = no
 
+    @revision = -1
+
     # create material #0, which is basically empty space in the model
     @vacuum = @material name: "vacuum", color: "invisible", type: "vacuum"
+
+    # default outputs - renderer goes here!
+    @outputs =
+      barycenter: new Barycenter @
+
 
   material: (params={}) ->
     id = Object.keys(@materials).length
@@ -141,28 +188,75 @@ class module.exports
   use: (material) -> 
     @currentMaterial = if material then material else @vacuum
 
-
   dot: (p, overwrite) =>
-    @set p, @currentMaterial, overwrite
+    @put p, @currentMaterial, overwrite
 
-  # set a dot
-  set: (p, m, overwrite=no) =>
-    id = "#{Math.round(p[0])},#{Math.round(p[1])},#{Math.round(p[2])}"
-    if !m or m.id is 0
+  # PUT a voxel using an array of size 3, a Material, and optional 'overwrite' boolean
+  put: (p, m, overwrite=no) =>
+
+    # Compress the Vector into a hashmap key
+    # This give us overhead, but greatly improve memory usage
+    id = p.join ','
+    ############
+    ## DELETE ##
+    ############
+    if !m? or !m or m.id is 0
       if id of @points
-        #log "deleting with fire!!"
-        delete @points[id]
-        @count--
-        # do not increment vacuum counter
+
+        delete @points[id] # actual delete!
+        @count--           # DECREMENT the Voxel counter
+        @revision++        # INCREMENT the revision since structure has changed
+
+        # fire DELETE event
+        async =>
+          for k,output of @outputs
+            if output.delete?
+              output.delete p, m
+
+      # else we want to delete an already delete voxel - skipping
+
+    ##############################
+    ## INSERT or UPDATE or SKIP ##
+    ##############################
     else
+      # id already exists - check if we should overwrite
       if id of @points
-        # ifEmpty option allow use to not add stuff in existing matter
+
+        ##########
+        ## SKIP ##
+        ##########
         unless overwrite
           return
+
+
+        ############
+        ## UPDATE ##
+        ############
+
+        # fire UPDATE event
+        async =>
+          for k,output of @outputs
+            if output.update?
+              output.update p, m
+
+      ############
+      ## INSERT ##
+      ############
       else
-        @count++
-        m.count++ # increment all other counters
-      @points[id] = m
+        @count++ # INCREMENT Voxel counter
+        m.count++ # INCREMENT Material counter (for statistics)
+
+        # fire INSERT event
+        async =>
+          for k,output of @outputs
+            if output.insert?
+              output.insert p, m
+
+      ######################
+      ## INSERT or UPDATE ##
+      ######################
+      @revision++       # INCREMENT the revision since structure has changed
+      @points[id] = m   # actual writing of new value to the memory
 
   line: (p1, p2, overwrite) ->
     #log "p1: #{p1} p2: #{p2}"
@@ -174,6 +268,7 @@ class module.exports
   #face: (p1, p2) ->
   #  width = len 
   
+  # each kernel_function ->
   each: (kernel) =>
     for id,material of @points
       s = id.split ','
@@ -184,34 +279,43 @@ class module.exports
       ]
       kernel position, material
 
+  # map kernel_function ->
   map: (kernel) =>
-    for id,material of @points
+    for id, m of @points
       s = id.split ','
-      position = [
+      p = [
         parseInt s[0]
         parseInt s[1]
         parseInt s[2]
       ]
-      @set position, kernel(position, material)
+      @put p, kernel(p, m)
 
   filter: (kernel) =>
-    @map (p, state) -> return state if (kernel(p, state))
+
+    for id, m of @points
+      s = id.split ','
+      p = [
+        parseInt s[0]
+        parseInt s[1]
+        parseInt s[2]
+      ]
+      @put p, m if kernel p, m
 
   reduce: (accumulator, kernel) =>
     acc = accumulator
-    @map (p, state) ->
+    @each (p, state) ->
       acc = kernel acc, p, state
     acc
     
   sum: (kernel) =>
     acc = 0
-    @map (p, state) ->
+    @each (p, state) ->
       acc += kernel p, state
     acc
     
   reduce: (accumulator, kernel) =>
     acc = accumulator
-    @map (p, state) ->
+    @each (p, state) ->
       acc = kernel acc, p, state
     acc
 
@@ -230,13 +334,10 @@ class module.exports
       return if (v[0] < 0 and p[0] > c[0]) or (v[0] > 0 and p[0] < c[0])
       return if (v[1] < 0 and p[1] > c[1]) or (v[1] > 0 and p[1] < c[1])
       return if (v[2] < 0 and p[2] > c[2]) or (v[2] > 0 and p[2] < c[2])
-      m
 
-  get: (p) =>
-    id = "#{Math.round(p[0])},#{Math.round(p[1])},#{Math.round(p[2])}" 
-    m = @points[id]
-    #log "id: #{id} -> #{m} -> #{@materials[0]}"
-    if m? then m else @materials[0]
+  get: (p) => @points[p.join(',')]
+
+  isEmpty: (p) => !@points[p.join(',')]?
 
   trace: (keypoints,fn) =>
     for i in [0...keypoints.length-1]
@@ -270,6 +371,7 @@ class module.exports
       height: @height
       depth: @depth
       matrix: (p) => @get p
+      isEmpty: (p) => @isEmpty p
 
     wrote = 0
     progress = 0
@@ -312,3 +414,5 @@ class module.exports
 
 
   export: (url) ->
+
+module.exports = Potter

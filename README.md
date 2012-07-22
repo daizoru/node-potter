@@ -2,30 +2,35 @@
 node-potter
 ===========
 
-Draw Something in 3D Space
+Draw and Print Something in 3D Voxel Space
 
 ## overview
 
-  A library to draw in a 3D canvas, and create things to be printed in 3D, like this beautiful dog:
+  A library to draw things in a 3D grid space using voxels (3D pixels).
+
+  The interface is simple - and you export your creation to a few file formats.
+
+  For an example, I did my best to create an accurate, voxel-based dog:
   
   ![doogy](http://img528.imageshack.us/img528/518/doggy.png)
    
-  I know, I know, it looks very realistic. You can do it, too! If you install this library.
+  Cool? Ok, you can do it, too. You just have to npm install potter.
 
-  For the moment 3D printers cannot read voxel-with-material formats,
-  so you may have to build your own 3D printer (which I started to do myself)
+  The ultimate goal is to support different material-by-voxel, to allow creation of models and objects with different colors, textures, materials in the inside (not just surface) 
 
-  That said, you can try an experimental .STL export right now
-  (which basically create polygonal 3D cubes for each voxel)
+  For the moment very few 3D printers support this (?), so you may have to build your own. Yep, this is hacker's stuff.
+
+  That said, you can try an experimental .STL export right now, to print models using common commercial and DIY printers.
+  (Basically, voxels are converted to 3D cubes, mades of regular triangles. Unfortunately, this means HUGE files, like 200 megabytes)
 
 
 ## why
 
-  Because it's funny. If you don't get why, you should probably 
-  browse something else on Github.
+  Because it's funny. If you don't get why, you should probably browse something else on Github.
 
 ## TODO
-  * better file stream support (currently buffer saturate)
+  * advanced streaming features - better buffering, and broadcast..
+  * .. in order to develop a WebGL renderer to visualize the voxel stream
   * support binary STL (and colors)
   * implement more materials: http://www.matbase.com/matbase_material_properties_database.html
 
@@ -226,8 +231,6 @@ pot.section([x,y,z], [0,1,1]);
 ```
 
 will cut the model in a quarter, on the Y/Z axis.
-
-
 
 ## Supported output format
 

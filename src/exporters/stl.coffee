@@ -57,22 +57,22 @@ class module.exports
     [r,g,b] = material.rgb
 
     buff = ""
-    if (x is 0) or @matrix([x-1,y,z]).id <= 0
+    if (x is 0)         or @isEmpty [x-1,y,z]
       buff += "#{n -1,0,0  }#{v x,z+1,y   }#{v x,   z,  y+1}#{v x,  z+1,y+1}"+end
       buff += "#{n -1,0,0  }#{v x,z+1,y   }#{v x,   z,  y  }#{v x,  z,  y+1}"+end
-    if x is @width-1 or @matrix([x+1,y,z]).id <= 0
+    if x is @width-1    or @isEmpty [x+1,y,z]
       buff += "#{n  1,0,0  }#{v x+1,z+1,y }#{v x+1, z+1,y+1}#{v x+1,z,  y+1}"+end
       buff += "#{n  1,0,0  }#{v x+1,z+1,y }#{v x+1, z,  y+1}#{v x+1,z,  y  }"+end
-    if (z is 0) or @matrix([x,y,z-1]).id <= 0
+    if (z is 0)         or @isEmpty [x,y,z-1]
       buff += "#{n  0,0,-1 }#{v x,  z,  y }#{v x+1, z,  y+1}#{v x,  z,  y+1}"+end
       buff += "#{n  0,0,-1 }#{v x,  z,  y }#{v x+1, z,  y  }#{v x+1,z,  y+1}"+end
-    if (z is @depth-1) or @matrix([x,y,z+1]).id <= 0
+    if (z is @depth-1)  or @isEmpty [x,y,z+1]
       buff += "#{n  0,0,1  }#{v x,  z+1,y }#{v x,   z+1,y+1}#{v x+1,z+1,y+1}"+end
       buff += "#{n  0,0,1  }#{v x,  z+1,y }#{v x+1, z+1,y+1}#{v x+1,z+1,y  }"+end
-    if (y is 0) or @matrix([x,y-1,z]).id <= 0
+    if (y is 0)         or @isEmpty [x,y-1,z]
       buff += "#{n  0,-1,0 }#{v x+1,z,  y }#{v x,  z+1, y  }#{v x+1,z+1,y  }"+end
       buff += "#{n  0,-1,0 }#{v x+1,z,  y }#{v x,  z,   y  }#{v x,  z+1,y  }"+end
-    if (y is @height-1) or @matrix([x,y+1,z]).id <= 0
+    if (y is @height-1) or @isEmpty [x,y+1,z]
       buff += "#{n  0,1,0  }#{v x+1,z,y+1}#{v x+1,z+1, y+1 }#{v x,  z+1,y+1}"+end
       buff += "#{n  0,1,0  }#{v x+1,z,y+1}#{v x,  z+1, y+1 }#{v x,  z,  y+1}"+end
 
@@ -86,6 +86,5 @@ class module.exports
     put = put.word32le 1717920867
     put = put.word8 103
     put = put.write @outStream
-;
 
        
