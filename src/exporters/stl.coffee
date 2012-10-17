@@ -21,6 +21,8 @@ class module.exports
 
     @matrix = options.matrix
 
+    @isEmpty = options.isEmpty
+
     @bin = yes
 
     buff = "solid Pot\n"

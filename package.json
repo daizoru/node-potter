@@ -1,11 +1,10 @@
 {
   "name"        : "potter",
   "description" : "Draw something in 3D space",
-  "version"     : "0.0.2",
+  "version"     : "0.0.3",
   "repository"  : { "type": "git", "url": "git://github.com/daizoru/node-potter.git" },
   "license"     : "BSD",
   "author"      : { "name" : "Julian Bilcke", "email" : "julian.bilcke@daizoru.com", "url" : "http://github.com/daizoru" },
-  "engines"     : { "node": "0.6.x || 0.7.x" },
   "main"        : "./lib/potter",
   "directories" : { "lib" : "./lib", "examples" : "./examples", "test" : "./test" },
   "scripts"     : {

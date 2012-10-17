@@ -92,7 +92,11 @@ class Material
 
     # used for drawing
     [r, g, b] = @rgb = toRGB @id
-    @rgbaString = "rgba(#{r},#{g},#{b},0)"
+    o = if @id is 0 then 0 else 1
+    o = 1
+    #
+    @rgbaDataString = "rgba(#{r},#{g},#{b},#{o})"
+
     @hexString = rgbToHex r, g, b
     @rgbInt = rgbToInt r, g, b
 
@@ -119,6 +123,7 @@ class Barycenter
       @sums[1] + p[1]
       @sums[2] + p[2]
     ]
+    #log "#{@} INSERT @sums: #{@sums}"
 
   delete: (p,m) =>
     @sums = [
@@ -126,12 +131,109 @@ class Barycenter
       @sums[1] - p[1]
       @sums[2] - p[2]
     ]
+    #log "#{@} DELETE @sums: #{@sums}"
 
   value: =>
-    log "computing barycenter"
-    if @pot.revision == @revision
-      @cache
-    else
+    unless @revision is @pot.revision
+      #log "computing new barycenter"
+      N = @count
+      center = @sums
+      center = [center[0] / N, center[1] / N, center[2] / N] if N >= 1
+      @cache = center
+      @revision = @pot.revision
+
+    @cache
+
+
+# canvas stream listen to potter, and update a high-res 3D grid made of voxels
+# TODO put this in a separate, node-potter-streamflow module
+class CanvasStream
+  constructor: (@pot) ->
+    Canvas = require 'canvas'
+    size =
+      x: 100
+      y: 100
+      z: 100
+
+    @layers = []
+    for i in [1..size.z]
+      canvas = new Canvas size.x, size.y
+      ctx = canvas.getContext '2d'
+      @layers.push {canvas, ctx}
+
+
+  insert: (p,m) =>
+    layer = @layers[p[2]]
+    ct = layer.ctx
+    ct.fillStyle = 'rgba(0,0,255,0.5)'
+    ct.strokeStyle = 'red'
+    ct.lineWidth = 1
+    ct.lineTo p[0], p[1]
+    ct.stroke()
+
+  delete: (p,m) =>
+    layer = @layers[p[2]]
+    ct = layer.ctx
+    ct.fillStyle = 'rgba(0,0,0,0.0)'
+    ct.strokeStyle = 'red'
+    ct.lineWidth = 1
+    ct.lineTo p[0], p[1]
+    ct.stroke()
+
+  update: (p,m) =>
+    layer = @layers[p[2]]
+    ct = layer.ctx
+    ct.fillStyle = 'rgba(0,0,255,0.5)'
+    ct.strokeStyle = 'red'
+    ct.lineWidth = 1
+    ct.lineTo p[0], p[1]
+    ct.stroke()
+
+  getLayer: (z) =>
+    @layers[z]
+    # write to 
+    @canvas.toBuffer (err, buf) ->
+      throw err if err
+      fs.writeFile __dirname + '/slice_#{z}.png', buf
+
+    canvas.toBuffer(function(err, buf){
+    var duration = new Date - start;
+    console.log('Rendered in %dms', duration);
+    res.writeHead(200, { 'Content-Type': 'image/png', 'Content-Length': buf.length });
+    res.end(buf);
+  });
+    
+
+class Bounding
+  constructor: (@pot) ->
+    m = 999999999 
+    @min = [+m,+m,+m]
+    @max = [-m,-m,-m]
+
+    @cache =
+      max: [0,0,0]
+      min: [0,0,0]
+    @revision = -1
+
+  insert: (p,m) =>
+    @values = [
+      @sums[0] + p[0]
+      @sums[1] + p[1]
+      @sums[2] + p[2]
+    ]
+    #log "#{@} INSERT @sums: #{@sums}"
+
+  delete: (p,m) =>
+    @sums = [
+      @sums[0] - p[0]
+      @sums[1] - p[1]
+      @sums[2] - p[2]
+    ]
+    #log "#{@} DELETE @sums: #{@sums}"
+
+  value: =>
+    unless @revision is @pot.revision
+      #log "computing new barycenter"
       N = @count
       center = @sums
       center = [center[0] / N, center[1] / N, center[2] / N] if N >= 1
@@ -177,6 +279,7 @@ class Potter
     # default outputs - renderer goes here!
     @outputs =
       barycenter: new Barycenter @
+      bounding: new Bounding @
 
 
   material: (params={}) ->
@@ -257,6 +360,7 @@ class Potter
       ######################
       @revision++       # INCREMENT the revision since structure has changed
       @points[id] = m   # actual writing of new value to the memory
+
 
   line: (p1, p2, overwrite) ->
     #log "p1: #{p1} p2: #{p2}"
