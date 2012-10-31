@@ -29,7 +29,7 @@
       <section>
         <h1>node-potter</h1>
 
-<p>Draw and Print Something in 3D Voxel Space</p>
+<p>Draw and Print Something in 3D Voxel Space - ALPHA SOFTWARE</p>
 
 <h2>overview</h2>
 
@@ -76,8 +76,7 @@
 
 <h2>usage</h2>
 
-<div class="highlight">
-<pre>
+<div class="highlight"><pre>
   <span class="kd">var</span> <span class="nx">Potter</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">'potter'</span><span class="p">);</span>
 
   <span class="c1">// initialize a voxel matrix</span>
@@ -120,16 +119,13 @@
     <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s2">"file saved"</span><span class="p">);</span>
   <span class="p">});</span>
 
-</pre>
-</div>
-
+</pre></div>
 
 <h2>Demo</h2>
 
 <h3>In CoffeeScript - please fasten your seatbelt</h3>
 
-<div class="highlight">
-<pre><span class="c1">#!/usr/bin/env coffee</span>
+<div class="highlight"><pre><span class="c1">#!/usr/bin/env coffee</span>
 
 <span class="p">{</span><span class="nx">log</span><span class="p">,</span><span class="nx">error</span><span class="p">,</span><span class="nx">inspect</span><span class="p">}</span> <span class="o">=</span> <span class="nx">require</span> <span class="s">'util'</span>
 <span class="nv">Potter = </span><span class="nx">require</span> <span class="s">'potter'</span>
@@ -170,9 +166,7 @@
 <span class="nx">dog</span><span class="p">.</span><span class="nx">save</span> <span class="s">"examples/exports/</span><span class="si">#{</span><span class="nx">name</span><span class="si">}</span><span class="s">.stl"</span><span class="p">,</span> <span class="o">-&gt;</span>
   <span class="nx">log</span> <span class="s">"file saved"</span>
 
-</pre>
-</div>
-
+</pre></div>
 
 <p>Then if you run it: </p>
 
@@ -205,19 +199,13 @@
 
 <p>Documentation legend</p>
 
-<div class="highlight">
-<pre>  <span class="n">foo</span> <span class="o">({</span> <span class="n">x</span><span class="k">:</span><span class="kt">Number</span> <span class="o">});</span>
-</pre>
-</div>
-
+<div class="highlight"><pre>  <span class="n">foo</span> <span class="o">({</span> <span class="n">x</span><span class="k">:</span><span class="kt">Number</span> <span class="o">});</span>
+</pre></div>
 
 <p>means function foo takes an object as argument, this object should have an entry with key 'x' and value of type Number</p>
 
-<div class="highlight">
-<pre>  <span class="n">foo</span> <span class="o">(</span> <span class="n">x</span><span class="k">=</span><span class="nc">Number</span> <span class="o">);</span> 
-</pre>
-</div>
-
+<div class="highlight"><pre>  <span class="n">foo</span> <span class="o">(</span> <span class="n">x</span><span class="k">=</span><span class="nc">Number</span> <span class="o">);</span> 
+</pre></div>
 
 <p>means function foo takes one argument, x, which should be a Number</p>
 
@@ -250,27 +238,18 @@
 <p>Where x,y,z are the center of the section plane,
 and u,v,w is the plane axis. example:</p>
 
-<div class="highlight">
-<pre><span class="nx">pot</span><span class="p">.</span><span class="nx">section</span><span class="p">([</span><span class="nx">x</span><span class="p">,</span><span class="nx">y</span><span class="p">,</span><span class="nx">z</span><span class="p">],</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">]);</span>
-</pre>
-</div>
-
+<div class="highlight"><pre><span class="nx">pot</span><span class="p">.</span><span class="nx">section</span><span class="p">([</span><span class="nx">x</span><span class="p">,</span><span class="nx">y</span><span class="p">,</span><span class="nx">z</span><span class="p">],</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">]);</span>
+</pre></div>
 
 <p>will cut the model in half, on the X axis,</p>
 
-<div class="highlight">
-<pre><span class="nx">pot</span><span class="p">.</span><span class="nx">section</span><span class="p">([</span><span class="nx">x</span><span class="p">,</span><span class="nx">y</span><span class="p">,</span><span class="nx">z</span><span class="p">],</span> <span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">]);</span>
-</pre>
-</div>
-
+<div class="highlight"><pre><span class="nx">pot</span><span class="p">.</span><span class="nx">section</span><span class="p">([</span><span class="nx">x</span><span class="p">,</span><span class="nx">y</span><span class="p">,</span><span class="nx">z</span><span class="p">],</span> <span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">]);</span>
+</pre></div>
 
 <p>will cut the model in half, on the X axis, but in the other direction, and:</p>
 
-<div class="highlight">
-<pre><span class="nx">pot</span><span class="p">.</span><span class="nx">section</span><span class="p">([</span><span class="nx">x</span><span class="p">,</span><span class="nx">y</span><span class="p">,</span><span class="nx">z</span><span class="p">],</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">]);</span>
-</pre>
-</div>
-
+<div class="highlight"><pre><span class="nx">pot</span><span class="p">.</span><span class="nx">section</span><span class="p">([</span><span class="nx">x</span><span class="p">,</span><span class="nx">y</span><span class="p">,</span><span class="nx">z</span><span class="p">],</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">]);</span>
+</pre></div>
 
 <p>will cut the model in a quarter, on the Y/Z axis.</p>
 
@@ -335,7 +314,16 @@ DATA ascii
 
 <h2>Changelog</h2>
 
-<h3>0.0.2</h3>
+<h3>0.0.4</h3>
+
+<ul>
+<li>Well the code was broken but nobody noticed it (the good side of having no external users!)</li>
+<li>Work in progress: comparison functions (see smetrics.coffee)</li>
+</ul><h3>0.0.3</h3>
+
+<ul>
+<li>?????</li>
+</ul><h3>0.0.2</h3>
 
 <ul>
 <li>better Potter::sphere() algorithm, with optional thickness (useful for fillings!)</li>
@@ -358,7 +346,17 @@ DATA ascii
       <p>Project maintained by <a href="https://github.com/daizoru">daizoru</a></p>
       <p>Hosted on GitHub Pages &mdash; Theme by <a href="https://github.com/orderedlist">orderedlist</a></p>
     </footer>
-    <!--[if !IE]><script>fixScale(document);</script><!--<![endif]-->
-    
+    <!--[if !IE]><script>fixScale(document);</script><![endif]-->
+              <script type="text/javascript">
+            var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+            document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+          </script>
+          <script type="text/javascript">
+            try {
+              var pageTracker = _gat._getTracker("UA-35909229-2");
+            pageTracker._trackPageview();
+            } catch(err) {}
+          </script>
+
   </body>
 </html>
