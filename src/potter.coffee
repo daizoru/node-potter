@@ -145,65 +145,6 @@ class Barycenter
     @cache
 
 
-# canvas stream listen to potter, and update a high-res 3D grid made of voxels
-# TODO put this in a separate, node-potter-streamflow module
-class CanvasStream
-  constructor: (@pot) ->
-    Canvas = require 'canvas'
-    size =
-      x: 100
-      y: 100
-      z: 100
-
-    @layers = []
-    for i in [1..size.z]
-      canvas = new Canvas size.x, size.y
-      ctx = canvas.getContext '2d'
-      @layers.push {canvas, ctx}
-
-
-  insert: (p,m) =>
-    layer = @layers[p[2]]
-    ct = layer.ctx
-    ct.fillStyle = 'rgba(0,0,255,0.5)'
-    ct.strokeStyle = 'red'
-    ct.lineWidth = 1
-    ct.lineTo p[0], p[1]
-    ct.stroke()
-
-  delete: (p,m) =>
-    layer = @layers[p[2]]
-    ct = layer.ctx
-    ct.fillStyle = 'rgba(0,0,0,0.0)'
-    ct.strokeStyle = 'red'
-    ct.lineWidth = 1
-    ct.lineTo p[0], p[1]
-    ct.stroke()
-
-  update: (p,m) =>
-    layer = @layers[p[2]]
-    ct = layer.ctx
-    ct.fillStyle = 'rgba(0,0,255,0.5)'
-    ct.strokeStyle = 'red'
-    ct.lineWidth = 1
-    ct.lineTo p[0], p[1]
-    ct.stroke()
-
-  getLayer: (z) =>
-    @layers[z]
-    # write to 
-    @canvas.toBuffer (err, buf) ->
-      throw err if err
-      fs.writeFile __dirname + '/slice_#{z}.png', buf
-
-    canvas.toBuffer(function(err, buf){
-    var duration = new Date - start;
-    console.log('Rendered in %dms', duration);
-    res.writeHead(200, { 'Content-Type': 'image/png', 'Content-Length': buf.length });
-    res.end(buf);
-  });
-    
-
 class Bounding
   constructor: (@pot) ->
     m = 999999999 
