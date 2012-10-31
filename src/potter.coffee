@@ -220,7 +220,7 @@ class Potter
     # default outputs - renderer goes here!
     @outputs =
       barycenter: new Barycenter @
-      bounding: new Bounding @
+      #bounding: new Bounding @
 
 
   material: (params={}) ->
@@ -379,6 +379,7 @@ class Potter
       return if (v[0] < 0 and p[0] > c[0]) or (v[0] > 0 and p[0] < c[0])
       return if (v[1] < 0 and p[1] > c[1]) or (v[1] > 0 and p[1] < c[1])
       return if (v[2] < 0 and p[2] > c[2]) or (v[2] > 0 and p[2] < c[2])
+      m
 
   get: (p) => @points[p.join(',')]
 

@@ -2,7 +2,7 @@
 node-potter
 ===========
 
-Draw and Print Something in 3D Voxel Space
+Draw and Print Something in 3D Voxel Space - ALPHA SOFTWARE
 
 ## overview
 
@@ -297,6 +297,15 @@ DATA ascii
 
 
 ## Changelog
+
+### 0.0.4
+
+  * Well the code was broken but nobody noticed it (the good side of having no external users!)
+  * Work in progress: comparison functions (see smetrics.coffee)
+
+### 0.0.3
+
+  * ?????
 
 ### 0.0.2
  
