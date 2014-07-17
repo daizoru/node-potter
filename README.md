@@ -1,6 +1,10 @@
+# WARNING: THIS PROJECT OBSOLETE - UNPUBLISHED FROM NPM
 
-node-potter
-===========
+This project is old (2012) and is not maintained anymore 
+(but if you really want it, git clone and rename it!)
+
+
+### node-potter
 
 Draw and Print Something in 3D Voxel Space - ALPHA SOFTWARE
 
@@ -24,10 +28,6 @@ Draw and Print Something in 3D Voxel Space - ALPHA SOFTWARE
   (Basically, voxels are converted to 3D cubes, mades of regular triangles. Unfortunately, this means HUGE files, like 200 megabytes)
 
 
-## why
-
-  Because it's funny. If you don't get why, you should probably browse something else on Github.
-
 ## TODO
   * advanced streaming features - better buffering, and broadcast..
   * .. in order to develop a WebGL renderer to visualize the voxel stream
@@ -36,14 +36,7 @@ Draw and Print Something in 3D Voxel Space - ALPHA SOFTWARE
 
 ## install
 
-  globally:
-
-    $ npm install potter -g
-
-  as a dependency of your Node project:
-
-    $ npm install potter
-
+   $ git clone git@github.com:daizoru/node-potter.git
 
 ## usage
 
