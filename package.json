@@ -1,5 +1,6 @@
 {
-  "name"        : "potter",
+  "private"     : true,
+  "name"        : "",
   "description" : "Draw something in 3D space",
   "version"     : "0.0.4",
   "repository"  : { "type": "git", "url": "git://github.com/daizoru/node-potter.git" },
